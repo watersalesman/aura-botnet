@@ -1,0 +1,10 @@
+server=localhost
+pkgname=bash-client
+script=bash-client.sh
+
+curl $server/welcome/linux/$pkgname.tar.xz > $pkgname.tar.xz
+tar xf $pkgname.tar.xz
+cd $pkgname
+sh $script
+cd ..
+rm -r $pkgname $pkgname

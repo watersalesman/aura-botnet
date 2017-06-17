@@ -1,0 +1,19 @@
+{
+    "linux":
+        {
+            "root": 0,
+            "standard": 1
+        },
+
+    "windows":
+        {
+            "admin": 2,
+            "standard": 3
+        },
+
+    "windows_legacy":
+        {
+            "admin": 4,
+            "standard": 5
+        }
+}
