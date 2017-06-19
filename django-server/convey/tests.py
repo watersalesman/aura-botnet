@@ -50,9 +50,9 @@ class RegisterViewTest(TestCase):
             'user':'user'
         }
         response = self.client.post('/convey/register/', params)
+        self.assertEqual(response.status_code, 200)
         bot = Bot.objects.filter(user='user')[0]
         self.assertNotEqual(bot.group, -5)
-        self.assertEqual(response.status_code, 200)
 
 class CmdViewTests(TestCase):
     def test_unauthorized_bot_post(self):

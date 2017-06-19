@@ -5,15 +5,21 @@
             "standard": 1
         },
 
-    "windows":
+    "windows 10":
         {
             "admin": 2,
             "standard": 3
         },
 
-    "windows_legacy":
+    "windows 8":
         {
             "admin": 4,
             "standard": 5
+        },
+
+    "windows 7":
+        {
+            "admin": 6,
+            "standard": 7
         }
 }

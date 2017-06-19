@@ -15,6 +15,8 @@ def get_group(operating_sys, user):
     users = groups[operating_sys.lower()]
     try:
         group_num = users[user]
+        if 'windows' in operating_sys and '(admin)' in user:
+            group_num = users['admin']
     except KeyError:
         group_num = users['standard']
 
@@ -53,11 +55,11 @@ def register(request):
         )
 
         bot.save()
-        return HttpResponse(200)
+        return HttpResponse(bot.user)
     except:
-        # An error in registration likely means tampering or something gone wrong
+        # An error in registration likely means tampering or something went wrong
         # Return a 404 for the sake of obfuscation
-        return HttpResponse(404)
+        raise Http404()
 
 
 @csrf_exempt
