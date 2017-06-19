@@ -79,7 +79,3 @@ if (-NOT (Test-Path $seed)) {
 } Else {
     run_cmd
 }
-
-Write-Host "Press any key to continue ..."
-
-$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
