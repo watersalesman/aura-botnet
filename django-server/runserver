@@ -1,2 +1,2 @@
 #!/bin/sh
-./manage.py runserver 0.0.0.0:41450
+./manage.py runserver 41450 --insecure
