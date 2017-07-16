@@ -121,3 +121,16 @@ class CmdViewTests(TestCase):
             {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
         )
         self.assertContains(response, 'Group 5')
+
+    def test_oneshot_command(self):
+        create_command(-1, 1, group_assigned=-2, cmd_txt='Default')
+        bot = create_bot(group=5)
+        self.client.post(
+            '/convey/cmd/',
+            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+        )
+        response = self.client.post(
+            '/convey/cmd/',
+            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+        )
+        self.assertEqual(response.status_code, 404)
