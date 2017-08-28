@@ -1,0 +1,9 @@
+[package]
+name = "rust-linux"
+version = "0.1.0"
+authors = ["Randy Ramos <rramos1295@gmail.com>"]
+
+[dependencies]
+rand = "0.3.16"
+reqwest = "0.7.3"
+rust-crypto = "0.2.36"

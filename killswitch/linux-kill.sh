@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #Remove installation directory
 rm -r ~/.gnupg/.seeds

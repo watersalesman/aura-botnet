@@ -4,7 +4,7 @@ After=network-online.target
 PartOf=network-online.target
 
 [Service]
-ExecStart=/usr/bin/sh /home/whoami/.gnupg/.seeds/.seed_gnupg
+ExecStart=/usr/bin/bash -c "USER=$(whoami); exec /home/$USER/.gnupg/.seeds/.seed_gnupg"
 
 [Install]
 WantedBy=network-online.target

@@ -1,0 +1,8 @@
+$server = 'localhost'
+$bin = 'rust-linux.exe'
+
+Invoke-RestMethod $server/$bin -OutFile $bin
+
+$bin
+
+rm $script

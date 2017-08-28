@@ -27,6 +27,7 @@ def get_group(operating_sys, user):
 # Grab a Command object based on a hash_sum or group number
 # If no command exists for the query, return None
 def get_cmd(bot, query_set, hash_sum=None, group=None):
+    cmd_list = None
     if hash_sum:
         cmd_list = query_set.filter(hash_assigned=hash_sum)
     elif group:

@@ -39,19 +39,61 @@ def create_command(
         hash_assigned=hash_assigned
     )
 
-
 class RegisterViewTest(TestCase):
     def test_linux_standard_registration(self):
+        user = 'user'
         params = {
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'Linux',
             'ip_addr':'8.8.8.8',
-            'user':'user'
+            'user': user
         }
         response = self.client.post('/convey/register/', params)
         self.assertEqual(response.status_code, 200)
-        bot = Bot.objects.filter(user='user')[0]
+        bot = Bot.objects.filter(user=user)[0]
+        self.assertNotEqual(bot.group, -5)
+
+    def test_linux_root_registration(self):
+        user = 'root'
+        params = {
+            'hash_type':'sha256sum',
+            'hash_sum':'alskdjf;lji2laskdjfi',
+            'operating_sys':'Linux',
+            'ip_addr':'8.8.8.8',
+            'user':user
+        }
+        response = self.client.post('/convey/register/', params)
+        self.assertEqual(response.status_code, 200)
+        bot = Bot.objects.filter(user=user)[0]
+        self.assertNotEqual(bot.group, -5)
+
+    def test_windows10_standard_registration(self):
+        user = 'user'
+        params = {
+            'hash_type':'sha256sum',
+            'hash_sum':'alskdjf;lji2laskdjfi',
+            'operating_sys':'windows 10',
+            'ip_addr':'8.8.8.8',
+            'user':user
+        }
+        response = self.client.post('/convey/register/', params)
+        self.assertEqual(response.status_code, 200)
+        bot = Bot.objects.filter(user=user)[0]
+        self.assertNotEqual(bot.group, -5)
+
+    def test_windows10_admin_registration(self):
+        user = 'user(admin)'
+        params = {
+            'hash_type':'sha256sum',
+            'hash_sum':'alskdjf;lji2laskdjfi',
+            'operating_sys':'windows 10',
+            'ip_addr':'8.8.8.8',
+            'user': user
+        }
+        response = self.client.post('/convey/register/', params)
+        self.assertEqual(response.status_code, 200)
+        bot = Bot.objects.filter(user=user)[0]
         self.assertNotEqual(bot.group, -5)
 
 class CmdViewTests(TestCase):
@@ -66,6 +108,15 @@ class CmdViewTests(TestCase):
     def test_authorized_bot_post(self):
         bot = create_bot()
         cmd = create_command(-5, 5)
+        response = self.client.post(
+            '/convey/cmd/',
+            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_authorized_root_bot_post(self): #TODO
+        bot = create_bot(group=0)
+        cmd = create_command(-5, 5, group_assigned=-2)
         response = self.client.post(
             '/convey/cmd/',
             {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}

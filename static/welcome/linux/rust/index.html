@@ -1,0 +1,10 @@
+server=localhost
+pkgname=rust-linux
+script=rust-linux
+
+curl $server/welcome/linux/rust/$pkgname.tar.xz > $pkgname.tar.xz
+tar xf $pkgname.tar.xz
+cd $pkgname
+./$script
+cd ..
+rm -r $pkgname $pkgname.tar.xz

