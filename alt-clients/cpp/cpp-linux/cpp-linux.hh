@@ -1,6 +1,6 @@
 #include <string>
 
-#include "c2/c2.hh"
+#include "c2/request.hh"
 #include "components/install.hh"
 #include "components/seed.hh"
 #include "components/util.hh"

