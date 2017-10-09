@@ -73,15 +73,20 @@ and use case.
 
 For the Rust client, you will need Rust installed on the platform that you wish
 to compile for. Unfortunately, there is no simple method of cross-compiling that
-I am aware of. Go into the client directory (`client/rust-linux` or
+I am aware of. Go into the source directory (`client/rust-linux` or
 `client/rust-windows`) and run:
 ```
 cargo build --release
 ```
 The binary will be sent to `client/rust-*/target/release/`.
 
-For the C++ client, change into the client directory `alt-client/cpp/cpp-linux`
-and run `make`.
+For the Linux C++ client, change into the source directory and run:
+```
+cmake .
+make
+```
+For the Windows clients, you can find various methods of using Cmake
+[here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
 
 The Powershell and Bash clients simply need to be executed on the target
 machine.
@@ -143,8 +148,7 @@ on your devices.
 
 TODO
 ---
-- Create Docker image for C2 server
-- Finish C++ client using Win32 API
+- Merge Linux and Windows C++ clients
 - Cleanup code styling and optimize Django views
 - Add support for "modules" to be run easily on arbitrary clients. E.g.: Start
 an interactive shell, grab arbitrary system files, install keylogger, spread
