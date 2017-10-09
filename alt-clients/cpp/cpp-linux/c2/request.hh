@@ -3,85 +3,61 @@
 
 #include <string>
 #include <cstring>
-#include <cstdlib>
 #include <curl/curl.h>
+
 
 namespace {
 
 
-// Struct for handling response data of varying sizes
-struct MemoryStruct
+// Write function for returning curl response as a string
+size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *outString)
 {
-    char *memory;
-    size_t size;
-};
+    ((std::string *)outString)->append((char *)contents);
 
-
-// Write function to use to return curl response as a char*
-size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    size_t realsize = size * nmemb;
-    struct MemoryStruct *mem = (struct MemoryStruct *)userp;
-
-    mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
-    if(mem->memory == NULL)
-    {
-        return 1;
-    }
-
-    memcpy(&(mem->memory[mem->size]), contents, realsize);
-    mem->size += realsize;
-    mem->memory[mem->size] = 0;
-
-    return realsize;
+    return nmemb * size;
 }
 
 
-char *requestHandler(const char *url, const char *postForm = NULL)
+std::string requestHandler(std::string url, std::string postForm = "")
 {
-    struct MemoryStruct chunk;
-    chunk.memory = (char*)malloc(1);
-    chunk.size = 0;
 
+    std::string response;
     CURL *curl;
-    CURLcode response;
+    CURLcode resCode;
 
     curl_global_init(CURL_GLOBAL_ALL);
     curl = curl_easy_init();
     if(curl)
     {
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
         // If POST form data is passed, include them in the request body
-        if (postForm) curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postForm);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+        if (postForm != "") {
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postForm.c_str());
+        }
 
-        response = curl_easy_perform(curl);
+        // Set write function and string to write to
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        resCode = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         curl_global_cleanup();
     }
 
-    return chunk.memory;
+    return response;
 }
 
 
-} //namespace
+} // namespace
+
 
 namespace request {
 
 
 std::string get(std::string url)
 {
-    //Convert string to char*
-    const char *charUrl = url.c_str();
-
-    //Send request and receive response as char*
-    const char *charResponse = requestHandler(charUrl);
-
-    // Ensure response is not NULL, then convert it to a string
-    if (charResponse == NULL) charResponse = "";
-    std::string response(charResponse);
+    std::string response = requestHandler(url);
 
     return response;
 }
@@ -89,21 +65,13 @@ std::string get(std::string url)
 
 std::string post(std::string url, std::string postForm)
 {
-    //Convert strings to char*
-    const char *charUrl = url.c_str();
-    const char *charPostForm = postForm.c_str();
-
-    //Send request and receive response as char*
-    const char *charResponse = requestHandler(charUrl, charPostForm);
-
-    // Ensure response is not NULL, then convert it to a string
-    if (charResponse == NULL) charResponse = "";
-    std::string response(charResponse);
+    std::string response = requestHandler(url, postForm);
 
     return response;
 }
 
 
 } //namespace request
+
 
 #endif // REQUEST_HH
