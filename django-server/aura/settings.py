@@ -77,15 +77,8 @@ WSGI_APPLICATION = 'aura.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'aura',
-        'USER': 'aura',
-        'PASSWORD': 'beacon',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'sql_mode': 'STRICT_ALL_TABLES'
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'bots.sqlite3',
     }
 }
 
