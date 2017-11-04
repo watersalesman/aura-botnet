@@ -57,9 +57,9 @@ and [documentation](https://docs.djangoproject.com/en/1.11/ref/databases/).
 
 Finally, run the following to start the server:
 ```
-./runserver
+./runserver.sh
 ```
-`runserver` is just a wrapper around `./manage.py runserver` with some default
+`runserver.sh` is just a wrapper around `manage.py runserver` with some default
 options that runs the server on port 41450. This can be easily edited or
 bypassed altogether.
 
