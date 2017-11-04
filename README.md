@@ -8,13 +8,13 @@ following:
 * Django is extremely portable and therefore good for testing/educational
 purposes. The server and database are contained within the `django-server`
 folder.
-* Django includes a very intuitive and powerful admin console that can be used
+* Django includes a very intuitive and powerful admin site that can be used
 for managing bots and commands
 * The server is only handling simple POST requests and returning text
 * Static files should be handled by a separate web server (local or remote) that
 excels in serving static files, such as nginx
 
-The admin console located at `http://your_server:django_port/admin` can be
+The admin site located at `http://your_server:django_port/admin` can be
 accessed after setting up a superuser (see below).
 
 Database
@@ -40,18 +40,21 @@ have the client and other files masquerading as configuration files.
 
 Getting Started: C2 Server
 ---
+The Docker image can be found [here](https://hub.docker.com/r/watersalesman/aura-c2/).
+Follow the instructions below to run the server normally.
+
 To initialize the SQLite3 database, simply change into the `django-server`
 directory and run:
 ```
 ./manage.py migrate
 ```
-After the database is initialized, create a superuser for the admin console by
+After the database is initialized, create a superuser for the admin site by
 running
 ```
 ./manage.py createsuperuser
 ```
 More information on configuring database
-and the admin console can be found in the following
+and the admin site can be found in the following
 [tutorial](https://docs.djangoproject.com/en/1.11/intro/tutorial02/)
 and [documentation](https://docs.djangoproject.com/en/1.11/ref/databases/).
 
@@ -91,7 +94,7 @@ below).
 Configuring Commands
 ---
 
-These can easily be managed through the Django shell or admin console. The
+These can easily be managed through the Django shell or admin site. The
 client periodically communicate with the specified server using POST
 requests to receive a command (default is every 5 minutes). Commands can be set
 to run for specific bot groups defined by operating system and user privilege.
