@@ -1,5 +1,0 @@
-cmake_minimum_required (VERSION 2.6)
-project (Aura)
-add_definitions(-DCURL_STATICLIB)
-add_executable(aura cpp-linux.cc)
-target_link_libraries(aura curl)

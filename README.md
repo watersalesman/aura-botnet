@@ -85,8 +85,8 @@ For the Linux C++ client, change into the source directory and run:
 cmake .
 make
 ```
-For the Windows clients, you can find various methods of using Cmake
-[here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
+For the Windows C++ client, you can find various methods of using Cmake on
+Windows [here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
 
 The Powershell and Bash clients simply need to be executed on the target
 machine.

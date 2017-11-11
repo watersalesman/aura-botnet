@@ -88,7 +88,7 @@ namespace install {
 
 void installFiles() {
 	std::string installDir = util::getInstallDir();
-	system(("mkdir " + installDir).c_str());
+    std::system(("mkdir " + installDir).c_str());
 	copyFile(BIN, installDir + BIN_NEW);
 }
 
@@ -104,7 +104,7 @@ void initRecurringJob() {
 		taskCommand += " /rl highest";
 	}
 
-	system(taskCommand.c_str());
+    std::system(taskCommand.c_str());
 }
 
 } //namespace install
