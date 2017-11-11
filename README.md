@@ -6,7 +6,7 @@ The botnet's C2 server utilizes the Django framework as the backend.
 It is far from the most efficient web server, but this is offset by the
 following:
 * Django is extremely portable and therefore good for testing/educational
-purposes. The server and database are contained within the `django-server`
+purposes. The server and database are contained within the `aura-server`
 folder.
 * Django includes a very intuitive and powerful admin site that can be used
 for managing bots and commands
@@ -14,14 +14,14 @@ for managing bots and commands
 * Static files should be handled by a separate web server (local or remote) that
 excels in serving static files, such as nginx
 
-The admin site located at `http://your_server:django_port/admin` can be
+The admin site located at `http://your_server:server_port/admin` can be
 accessed after setting up a superuser (see below).
 
 Database
 ---
-The Django server is currently configured to use a SQLite3 database,
+The C2 server is currently configured to use a SQLite3 database,
 `bots.sqlite3`. The current configuration can be changed in the *settings.py*
-file under `django-server/aura`. You may wish to use MySQL, or even PostgreSQL
+file under `aura-server/aura`. You may wish to use MySQL, or even PostgreSQL
 instead; this easy to do thanks to Django's portable database API.
 
 Bot Clients
@@ -43,7 +43,7 @@ Getting Started: C2 Server
 The Docker image can be found [here](https://hub.docker.com/r/watersalesman/aura-c2/).
 Follow the instructions below to run the server normally.
 
-To initialize the SQLite3 database, simply change into the `django-server`
+To initialize the SQLite3 database, simply change into the `aura-server`
 directory and run:
 ```
 ./manage.py migrate
@@ -106,7 +106,7 @@ These can easily be managed through the Django shell or admin site. The
 client periodically communicate with the specified server using POST
 requests to receive a command (default is every 5 minutes). Commands can be set
 to run for specific bot groups defined by operating system and user privilege.
-This is specified in `django-server/groups.json`. The only reserved group
+This is specified in `aura-server/groups.json`. The only reserved group
 numbers are `-1`, for priority commands that are run by all bots, and `-2`, for
 default commands that are run by all bots only if there is no other command to run;
 you can also assign commands to individual bots using the hash of their seed.
