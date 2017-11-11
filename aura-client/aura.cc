@@ -19,7 +19,7 @@ int main()
     if (host.isInit()) {
         host.executeOrder();
     } else {
-		host.init();
+        host.init();
     }
 
     return 0;

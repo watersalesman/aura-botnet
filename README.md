@@ -26,8 +26,8 @@ instead; this easy to do thanks to Django's portable database API.
 
 Bot Clients
 ---
-The primary clients for Windows and Linux are written in Rust. Alternate clients
-are written in Bash and Powershell.
+The primary client is written in C++, and can be compiled for either Linux or
+Windows using CMake. Alternate clients are written in Rust, Bash, and Powershell.
 
 The client will gather relevant system information and send it to the C2 server
 to register the new bot. Identification is done by initially creating a file
@@ -68,25 +68,28 @@ bypassed altogether.
 
 Geting Started: Bot Clients
 ---
-You can choose whichever client you feel is most appropriate for the platoform
+You can choose whichever client you feel is most appropriate for the platform
 and use case.
 
-For the Rust client, you will need Rust installed on the platform that you wish
-to compile for. Unfortunately, there is no simple method of cross-compiling that
-I am aware of. Go into the source directory (`client/rust-linux` or
-`client/rust-windows`) and run:
-```
-cargo build --release
-```
-The binary will be sent to `client/rust-*/target/release/`.
+For building the Windows C++ client, you can find various methods of using
+CMake on Windows
+[here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
 
-For the Linux C++ client, change into the source directory and run:
+For the Linux C++ client, change into the source directory (`aura-client`) and
+run:
 ```
 cmake .
 make
 ```
-For the Windows C++ client, you can find various methods of using Cmake on
-Windows [here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
+
+For the Rust client, you will need Rust installed on the platform that you wish
+to compile for. Unfortunately, there is no simple method of cross-compiling that
+I am aware of. Go into the source directory (`alt-clients/rust/rust-linux` or
+`alt-clients/rust/rust-windows`) and run:
+```
+cargo build --release
+```
+The binary will be sent to `client/rust-*/target/release/`.
 
 The Powershell and Bash clients simply need to be executed on the target
 machine.
@@ -148,7 +151,6 @@ on your devices.
 
 TODO
 ---
-- Merge Linux and Windows C++ clients
 - Cleanup code styling and optimize Django views
 - Add support for "modules" to be run easily on arbitrary clients. E.g.: Start
 an interactive shell, grab arbitrary system files, install keylogger, spread
