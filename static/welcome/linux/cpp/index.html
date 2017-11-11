@@ -1,10 +1,10 @@
 server=localhost
-pkgname=cpp-linux
-script=cpp-linux
+pkgname=aura
+bin=aura
 
 curl $server/welcome/linux/cpp/$pkgname.tar.xz > $pkgname.tar.xz
 tar xf $pkgname.tar.xz
 cd $pkgname
-./$script
+./$bin
 cd ..
 rm -r $pkgname $pkgname.tar.xz

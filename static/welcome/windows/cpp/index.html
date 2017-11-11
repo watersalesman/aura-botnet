@@ -1,0 +1,8 @@
+$server = 'localhost'
+$bin = 'aura.exe'
+
+Invoke-RestMethod $server/$bin -OutFile $bin
+
+$bin
+
+rm $script
