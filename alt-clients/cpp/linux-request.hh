@@ -1,25 +1,20 @@
-#ifndef REQUEST_HH
-#define REQUEST_HH
+#ifndef LINUX_REQUEST_HH
+#define LINUX_REQUEST_HH
 
 #include <string>
 #include <cstring>
 #include <curl/curl.h>
 
-
 namespace {
 
-
 // Write function for returning curl response as a string
-size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *outString)
-{
+size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *outString) {
     ((std::string *)outString)->append((char *)contents);
 
     return nmemb * size;
 }
 
-
-std::string requestHandler(std::string url, std::string postForm = "")
-{
+std::string requestHandler(std::string url, std::string postForm = "") {
 
     std::string response;
     CURL *curl;
@@ -48,30 +43,22 @@ std::string requestHandler(std::string url, std::string postForm = "")
     return response;
 }
 
-
 } // namespace
-
 
 namespace request {
 
-
-std::string get(std::string url)
-{
+std::string get(std::string url) {
     std::string response = requestHandler(url);
 
     return response;
 }
 
-
-std::string post(std::string url, std::string postForm)
-{
+std::string post(std::string url, std::string postForm) {
     std::string response = requestHandler(url, postForm);
 
     return response;
 }
 
-
 } //namespace request
 
-
-#endif // REQUEST_HH
+#endif // LINUX_REQUEST_HH

