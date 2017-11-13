@@ -16,7 +16,12 @@ class WinINet {
         ~WinINet();
         std::string getHost() { return _host; }
         int getPort() { return _port; }
-        void request(std::string httpMethod, INTERNET_SCHEME scheme, std::string uri, std::string data);
+        void request(
+            const std::string& httpMethod,
+            INTERNET_SCHEME scheme,
+            const std::string& uri,
+            const std::string& data
+        );
         std::string getResponse() { return _responseStr; }
 
     private:
@@ -33,10 +38,28 @@ class WinINet {
 WinINet::WinINet(const char* host, int port = INTERNET_DEFAULT_HTTP_PORT) {
     _host = host;
     _port = port;
+
 	_uaSize = sizeof(_userAgent);
     ObtainUserAgentString(0, _userAgent, &_uaSize);
-    _internet = InternetOpenA(_userAgent, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-    _connection = InternetConnectA(_internet, host, port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+
+    _internet = InternetOpenA(
+        _userAgent,
+        INTERNET_OPEN_TYPE_PRECONFIG,
+        NULL,
+        NULL,
+        0
+    );
+
+    _connection = InternetConnectA(
+        _internet,
+        host,
+        port,
+        NULL,
+        NULL,
+        INTERNET_SERVICE_HTTP,
+        0,
+        0
+    );
 }
 
 WinINet::~WinINet() {
@@ -45,7 +68,12 @@ WinINet::~WinINet() {
     InternetCloseHandle(_internet);
 }
 
-void WinINet::request(std::string httpMethod, INTERNET_SCHEME scheme, std::string uri, std::string data = "") {
+void WinINet::request(
+    const std::string& httpMethod,
+    INTERNET_SCHEME scheme,
+    const std::string& uri,
+    const std::string& data
+) {
     _responseStr = "";
 
     if (httpMethod != "POST") {
@@ -58,7 +86,15 @@ void WinINet::request(std::string httpMethod, INTERNET_SCHEME scheme, std::strin
 		requestFlags = (requestFlags | INTERNET_FLAG_SECURE);
 	}
     // Create request
-    _request = HttpOpenRequestA(_connection, httpMethod.c_str(), uri.c_str(), "HTTP/1.1", NULL, NULL, requestFlags, NULL);
+    _request = HttpOpenRequestA(
+        _connection,
+        httpMethod.c_str(),
+        uri.c_str(), "HTTP/1.1",
+        NULL,
+        NULL,
+        requestFlags,
+        NULL
+    );
     if (_request) {
         // Prepare header and optional post form
         std::string header;
@@ -71,11 +107,25 @@ void WinINet::request(std::string httpMethod, INTERNET_SCHEME scheme, std::strin
         int formlen = strlen(form);
 
         // Send request
-        BOOL requestSuccess = HttpSendRequestA(_request, header.c_str(), headerlen, form, formlen);
+        BOOL requestSuccess = HttpSendRequestA(
+            _request,
+            header.c_str(),
+            headerlen,
+            form,
+            formlen
+        );
 
         // Read request response
         if (requestSuccess) {
-            while(InternetReadFile(_request, &_buffer, strlen(_buffer), &_bytesRead) && _bytesRead > 0) {
+            while(
+                InternetReadFile(
+                    _request,
+                    &_buffer,
+                    strlen(_buffer),
+                    &_bytesRead
+                )
+                && _bytesRead > 0
+            ) {
                 _responseStr.append(_buffer, _bytesRead);
             }
         }
@@ -83,7 +133,11 @@ void WinINet::request(std::string httpMethod, INTERNET_SCHEME scheme, std::strin
     }
 }
 
-static std::string requestHandler(std::string httpMethod, std::string url, std::string data="") {
+static std::string requestHandler(
+    const std::string& httpMethod,
+    const std::string& url,
+    const std::string& data=""
+) {
     // Use InternetCrackUrlA() to parse URL
 	URL_COMPONENTS urlParts;
 	char scheme[20], host[128], user[256], pass[256], uri[512], extraInfo[512];

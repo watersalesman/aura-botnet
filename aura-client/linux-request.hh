@@ -14,7 +14,7 @@ size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *outString)
     return nmemb * size;
 }
 
-std::string requestHandler(std::string url, std::string postForm = "") {
+std::string requestHandler(const std::string& url, const std::string& postForm = "") {
 
     std::string response;
     CURL *curl;
@@ -47,13 +47,13 @@ std::string requestHandler(std::string url, std::string postForm = "") {
 
 namespace request {
 
-std::string get(std::string url) {
+std::string get(const std::string& url) {
     std::string response = requestHandler(url);
 
     return response;
 }
 
-std::string post(std::string url, std::string postForm) {
+std::string post(const std::string& url, const std::string& postForm) {
     std::string response = requestHandler(url, postForm);
 
     return response;

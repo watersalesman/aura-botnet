@@ -21,7 +21,7 @@ static void copyFile (std::string src, std::string dst) {
 
 namespace util {
 
-std::string getCmdOutput(std::string cmd) {
+std::string getCmdOutput(const std::string& cmd) {
     FILE *pipe;
     char buf[512];
     std::string output;

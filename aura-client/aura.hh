@@ -17,7 +17,7 @@
 
 class C2Server {
 public:
-	C2Server(std::string registerUrl, std::string cmdUrl) {
+	C2Server(const std::string& registerUrl, const std::string& cmdUrl) {
 		_registerUrl = registerUrl;
 		_cmdUrl = cmdUrl;
 	}
@@ -31,7 +31,7 @@ private:
 
 class Seed {
 public:
-	Seed (std::string filePath) { _path = filePath; }
+	Seed (const std::string& filePath) { _path = filePath; }
 	bool exists();
 	void initSeed();
 	void getSeed();
@@ -40,7 +40,7 @@ public:
 private:
 	std::string _path, _hash;
 
-	void calcHash(std::string);
+	void calcHash(const std::string&);
 	void calcHash(std::ifstream&);
 };
 
@@ -81,7 +81,7 @@ void Seed::getSeed() {
     }
 }
 
-void Seed::calcHash (std::string str) {
+void Seed::calcHash (const std::string& str) {
     _hash = picosha2::hash256_hex_string(str);
 }
 
@@ -100,7 +100,7 @@ void Seed::calcHash (std::ifstream& seedFile) {
 
 class Bot {
 public:
-	Bot(std::string seedPath, C2Server* server) {
+	Bot(const std::string& seedPath, C2Server* server) {
 		_hashType = HASH_TYPE;
 		_seed = new Seed(seedPath);
         _c2Server = server;
