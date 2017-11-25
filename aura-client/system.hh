@@ -11,10 +11,20 @@
 
 #ifdef __linux__
 
-static void copyFile(std::string src, std::string dst) {
+#include <unistd.h>
+#include <sys/stat.h>
+
+static bool  copyFile(std::string src, std::string dst) {
     std::ifstream srcFile(src, std::ios::binary);
     std::ofstream dstFile(dst, std::ios::binary|std::ios::trunc);
-    if(srcFile.is_open() && dstFile.is_open()) dstFile << srcFile.rdbuf();
+    if(srcFile.is_open() && dstFile.is_open()) {
+        dstFile << srcFile.rdbuf();
+        return true;
+    } else return false;
+}
+
+static int linkFile(std::string src, std::string dst) {
+    return link(src.c_str(), dst.c_str());
 }
 
 namespace util {
@@ -76,7 +86,7 @@ std::string getIPAddr() {
 namespace install {
 
 void installFiles() {
-    std::string mkdirCmd, installDir, timerPath, binPath, chmodCmd;
+    std::string mkdirCmd, installDir, timerPath, binPath;
 
     installDir = util::getInstallDir();
     binPath = installDir + BIN_NEW;
@@ -102,9 +112,8 @@ void installFiles() {
     copyFile(BIN, binPath);
     copyFile(TIMER, timerPath);
 
-    // Copying the file does not keep permissions
-    chmodCmd = "chmod 755 " + binPath;
-    std::system(chmodCmd.c_str());
+    // Ensure that binary is executable for owner
+    chmod(binPath.c_str(), S_IRWXU);
 }
 
 void initRecurringJob() {
@@ -126,14 +135,13 @@ void initRecurringJob() {
 #ifdef WIN32
 
 #include <regex>
+#include <windows.h>
 
 bool IS_SUPERUSER;
 bool IS_SUPERUSER_IS_CACHED = false;
 
-static void copyFile (std::string src, std::string dst) {
-    std::ifstream srcFile (src, std::ios::binary);
-    std::ofstream dstFile (dst, std::ios::binary|std::ios::trunc);
-    if (srcFile.is_open() && dstFile.is_open()) dstFile << srcFile.rdbuf();
+static bool copyFile (std::string src, std::string dst) {
+    return CopyFile(src.c_str(), dst.c_str(), false);
 }
 
 namespace util {
