@@ -1,17 +1,8 @@
-#ifdef WIN32
-    #include "win-components.hh"
-    #include "win-request.hh"
-#endif
-
-#ifdef __linux__
-    #include "linux-components.hh"
-    #include "linux-request.hh"
-#endif
-
 #include <string>
 #include <fstream>
 #include <random>
-#include <cstdlib>
+#include "request.hh"
+#include "system.hh"
 #include "constants.hh"
 #include "picosha2.h"
 
@@ -73,11 +64,9 @@ void Seed::initSeed() {
 }
 
 void Seed::getSeed() {
-    if ( exists() ) {
+    if (exists()) {
         std::ifstream seedFile (_path, std::ios::binary);
-        if ( seedFile.is_open() ) {
-            calcHash(seedFile);
-        }
+        if (seedFile.is_open()) calcHash(seedFile);
     }
 }
 
@@ -94,8 +83,7 @@ void Seed::calcHash (std::ifstream& seedFile) {
             hash.begin(),
             hash.end()
             );
-    std::string hex_str = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
-    _hash = hex_str;
+    _hash = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
 }
 
 class Bot {

@@ -1,12 +1,73 @@
-#ifndef WIN_REQUEST_HH
-#define WIN_REQUEST_HH
+#ifndef REQUEST_HH
+#define REQUEST_HH
+
+#include <string>
+
+#ifdef __linux__
+
+#include <cstring>
+#include <curl/curl.h>
+
+namespace {
+
+// Write function for returning curl response as a string
+size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *outString) {
+    ((std::string *)outString)->append((char *)contents);
+
+    return nmemb * size;
+}
+
+std::string requestHandler(const std::string& url, const std::string& postForm = "") {
+
+    std::string response;
+    CURL *curl;
+    CURLcode resCode;
+
+    curl_global_init(CURL_GLOBAL_ALL);
+    curl = curl_easy_init();
+    if(curl)
+    {
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+        // If POST form data is passed, include them in the request body
+        if (postForm != "") {
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postForm.c_str());
+        }
+
+        // Set write function and string to write to
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        resCode = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+    }
+
+    return response;
+}
+
+} // namespace
+
+namespace request {
+
+// GET request
+std::string get(const std::string& url) {
+    return requestHandler(url);
+}
+
+// POST request
+std::string post(const std::string& url, const std::string& postForm) {
+    return requestHandler(url, postForm);
+}
+
+} //namespace request
+
+#endif // __linux__
+
+#ifdef WIN32
 
 #include <windows.h>
 #include <wininet.h>
-#pragma comment(lib, "wininet.lib")
-#pragma comment (lib, "urlmon.lib")
-#include <iostream>
-#include <string>
 #include <vector>
 #include <stdio.h>
 
@@ -168,16 +229,18 @@ static std::string requestHandler(
 
 namespace request {
 
-// GET
+// GET request
 std::string get(std::string url) {
     return requestHandler("GET", url);
 }
 
-// POST
+// POST request
 std::string post(std::string url, std::string data) {
     return requestHandler("POST", url, data);
 }
 
 } //namespace request
 
-#endif // WIN_REQUEST_HH
+#endif // WIN32
+
+#endif // REQUEST_HH
