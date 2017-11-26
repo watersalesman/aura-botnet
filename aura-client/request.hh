@@ -2,6 +2,36 @@
 #define REQUEST_HH
 
 #include <string>
+#include <vector>
+#include <tuple>
+
+namespace request {
+
+class PostForm {
+public:
+    void addField(const std::string& field, const std::string& value);
+    std::string toString();
+
+private:
+    std::vector<std::tuple<std::string, std::string>> _data;
+};
+
+void PostForm::addField(const std::string& field, const std::string& value) {
+    _data.push_back(std::make_tuple(field, value));
+}
+
+std::string PostForm::toString() {
+    std::string formString, field, value;
+    for(int i=0; i<_data.size(); ++i) {
+        if(i) formString += "&";
+        std::tie(field, value) = _data[i];
+        formString += field + "=" + value;
+    }
+
+    return formString;
+}
+
+} // namespace request
 
 #ifdef __linux__
 

