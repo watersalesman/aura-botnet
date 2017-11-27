@@ -1,10 +1,10 @@
 cmake_minimum_required (VERSION 2.6)
 project (Aura)
+add_definitions(-DAURA_VERSION="0.1.2")
 
 set(BIN aura)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g")
 set(PICOSHA2_INCLUDE "${CMAKE_SOURCE_DIR}/deps/PicoSHA2/")
-
 include_directories(${PICOSHA2_INCLUDE})
 
 if(UNIX AND NOT APPLE)
