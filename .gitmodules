@@ -1,0 +1,3 @@
+[submodule "aura-client/deps/PicoSHA2"]
+	path = aura-client/deps/PicoSHA2
+	url = https://github.com/okdshin/PicoSHA2

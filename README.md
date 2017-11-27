@@ -71,16 +71,22 @@ Geting Started: Bot Clients
 You can choose whichever client you feel is most appropriate for the platform
 and use case.
 
-For building the Windows C++ client, you can find various methods of using
-CMake on Windows
-[here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
+For the Linux C++ client, change into the source directory (`aura-client`).
+If the repo was not cloned with the `--recursive` flag, pull the needed
+dependencies by running:
+```
+git submodule update --init --recursive
+```
 
-For the Linux C++ client, change into the source directory (`aura-client`) and
-run:
+Then build by running:
 ```
 cmake .
 make
 ```
+
+For building the Windows C++ client, you can find various methods of using
+CMake on Windows
+[here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
 
 For the Rust client, you will need Rust installed on the platform that you wish
 to compile for. Unfortunately, there is no simple method of cross-compiling that
