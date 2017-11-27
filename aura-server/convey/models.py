@@ -19,6 +19,7 @@ class Command(models.Model):
         return "Group {}: {}".format(self.group_assigned, self.cmd_txt)
 
 class Bot(models.Model):
+    version = models.CharField(max_length=15, null=True)
     hash_type = models.CharField(max_length=15)
     hash_sum = models.CharField(max_length=200)
     group = models.IntegerField(default=0)

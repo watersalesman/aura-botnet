@@ -26,10 +26,16 @@ def get_cmd(bot, query_set, hash_sum=None, group=None):
 
 @csrf_exempt
 def cmd(request):
+    # Alternate clients do not currently send version
+    if 'version' in request.POST:
+        version = request.POST['version']
+    else:
+        version = None
     hash_sum = request.POST['hash_sum']
     ip_addr = request.POST['ip_addr']
 
     bot = get_object_or_404(Bot, hash_sum=hash_sum)
+    bot.version = version
     bot.ip_addr = ip_addr
     bot.last_contact = timezone.now()
     bot.save()

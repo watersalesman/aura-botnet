@@ -22,6 +22,11 @@ def get_group(operating_sys, user):
 @csrf_exempt
 def register(request):
     try:
+        # Alternate clients do not currently send version
+        if 'version' in request.POST:
+            version = request.POST['version']
+        else:
+            version = None
         hash_type = request.POST['hash_type']
         hash_sum = request.POST['hash_sum']
         operating_sys = request.POST['operating_sys']
@@ -35,6 +40,7 @@ def register(request):
         geolocation = geo_json['country']
 
         bot = Bot.objects.create(
+            version=version,
             hash_type=hash_type,
             hash_sum=hash_sum,
             group=group,

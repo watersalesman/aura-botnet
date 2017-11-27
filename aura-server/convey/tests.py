@@ -6,6 +6,7 @@ from convey.models import Bot, Command
 
 
 def create_bot(
+    version='0.1.2',
     hash_type='sha256sum',
     hash_sum='testsum123',
     operating_sys='Test',
@@ -43,6 +44,7 @@ class RegisterViewTest(TestCase):
     def test_linux_standard_registration(self):
         user = 'user'
         params = {
+            'version': '0.1.2',
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'Linux',
@@ -57,6 +59,7 @@ class RegisterViewTest(TestCase):
     def test_linux_root_registration(self):
         user = 'root'
         params = {
+            'version': '0.1.2',
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'Linux',
@@ -71,6 +74,7 @@ class RegisterViewTest(TestCase):
     def test_windows10_standard_registration(self):
         user = 'user'
         params = {
+            'version': '0.1.2',
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'windows 10',
@@ -85,6 +89,7 @@ class RegisterViewTest(TestCase):
     def test_windows10_admin_registration(self):
         user = 'user(admin)'
         params = {
+            'version': '0.1.2',
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'windows 10',
@@ -95,6 +100,20 @@ class RegisterViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         bot = Bot.objects.filter(user=user)[0]
         self.assertNotEqual(bot.group, -5)
+
+    def test_no_version_registration(self):
+        user = 'user(admin)'
+        params = {
+            'hash_type':'sha256sum',
+            'hash_sum':'alskdjf;lji2laskdjfi',
+            'operating_sys':'windows 10',
+            'ip_addr':'8.8.8.8',
+            'user': user
+        }
+        response = self.client.post('/convey/register/', params)
+        self.assertEqual(response.status_code, 200)
+        bot = Bot.objects.filter(user=user)[0]
+        self.assertEqual(bot.version, None)
 
 class CmdViewTests(TestCase):
     def test_unauthorized_bot_post(self):
@@ -114,7 +133,7 @@ class CmdViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_authorized_root_bot_post(self): #TODO
+    def test_authorized_root_bot_post(self):
         bot = create_bot(group=0)
         cmd = create_command(-5, 5, group_assigned=-2)
         response = self.client.post(
@@ -185,3 +204,22 @@ class CmdViewTests(TestCase):
             {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_info_is_updated(self):
+        user = "test";
+        bot = create_bot()
+        cmd = create_command(-5, 5)
+        new_version = "UpdatedHashSum"
+        new_ip = "UpdatedIpAddr"
+        response = self.client.post(
+            '/convey/cmd/',
+            {
+                'version': new_version,
+                'hash_sum': bot.hash_sum,
+                'ip_addr': new_ip
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        bot = Bot.objects.all()[0]
+        self.assertEqual(bot.version, new_version)
+        self.assertEqual(bot.ip_addr, new_ip)
