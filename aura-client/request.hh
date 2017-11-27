@@ -58,6 +58,7 @@ std::string requestHandler(const std::string& url, const std::string& postForm =
     if(curl)
     {
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
         // If POST form data is passed, include them in the request body
         if (postForm != "") {
