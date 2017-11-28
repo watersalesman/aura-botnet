@@ -4,6 +4,7 @@ from django.utils import timezone
 
 
 class Command(models.Model):
+    shell = models.CharField(max_length=30, null=True, blank=True)
     cmd_txt = models.TextField(default='')
     start_time = models.DateTimeField('start_time', default=timezone.now)
     end_time = models.DateTimeField('end_time', default=timezone.now)
@@ -19,7 +20,7 @@ class Command(models.Model):
         return "Group {}: {}".format(self.group_assigned, self.cmd_txt)
 
 class Bot(models.Model):
-    version = models.CharField(max_length=15, null=True)
+    version = models.CharField(max_length=15, null=True, blank=True)
     hash_type = models.CharField(max_length=15)
     hash_sum = models.CharField(max_length=200)
     group = models.IntegerField(default=0)
