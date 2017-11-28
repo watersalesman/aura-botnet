@@ -48,7 +48,6 @@ class RegisterViewTest(TestCase):
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'Linux',
-            'ip_addr':'8.8.8.8',
             'user': user
         }
         response = self.client.post('/convey/register/', params)
@@ -63,7 +62,6 @@ class RegisterViewTest(TestCase):
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'Linux',
-            'ip_addr':'8.8.8.8',
             'user':user
         }
         response = self.client.post('/convey/register/', params)
@@ -78,7 +76,6 @@ class RegisterViewTest(TestCase):
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'windows 10',
-            'ip_addr':'8.8.8.8',
             'user':user
         }
         response = self.client.post('/convey/register/', params)
@@ -93,7 +90,6 @@ class RegisterViewTest(TestCase):
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'windows 10',
-            'ip_addr':'8.8.8.8',
             'user': user
         }
         response = self.client.post('/convey/register/', params)
@@ -107,7 +103,6 @@ class RegisterViewTest(TestCase):
             'hash_type':'sha256sum',
             'hash_sum':'alskdjf;lji2laskdjfi',
             'operating_sys':'windows 10',
-            'ip_addr':'8.8.8.8',
             'user': user
         }
         response = self.client.post('/convey/register/', params)
@@ -120,7 +115,7 @@ class CmdViewTests(TestCase):
         cmd = create_command(-5, 5)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum':'fake', 'ip_addr':'fake'}
+            {'hash_sum':'fake'}
         )
         self.assertEqual(response.status_code, 404)
 
@@ -129,7 +124,7 @@ class CmdViewTests(TestCase):
         cmd = create_command(-5, 5)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertEqual(response.status_code, 200)
 
@@ -138,7 +133,7 @@ class CmdViewTests(TestCase):
         cmd = create_command(-5, 5, group_assigned=-2)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertEqual(response.status_code, 200)
 
@@ -147,7 +142,7 @@ class CmdViewTests(TestCase):
         create_command(5, 10)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertEqual(response.status_code, 404)
 
@@ -156,7 +151,7 @@ class CmdViewTests(TestCase):
         create_command(-10, -5)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertEqual(response.status_code, 404)
 
@@ -167,7 +162,7 @@ class CmdViewTests(TestCase):
         bot = create_bot(group=5)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertContains(response, 'ALL Command')
 
@@ -178,7 +173,7 @@ class CmdViewTests(TestCase):
         bot = create_bot(hash_sum='test', group=5)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertContains(response, 'Individual')
 
@@ -188,7 +183,7 @@ class CmdViewTests(TestCase):
         bot = create_bot(group=5)
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertContains(response, 'Group 5')
 
@@ -197,29 +192,26 @@ class CmdViewTests(TestCase):
         bot = create_bot(group=5)
         self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         response = self.client.post(
             '/convey/cmd/',
-            {'hash_sum': bot.hash_sum, 'ip_addr': bot.ip_addr}
+            {'hash_sum': bot.hash_sum}
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_info_is_updated(self):
+    def test_version_is_updated(self):
         user = "test";
         bot = create_bot()
         cmd = create_command(-5, 5)
-        new_version = "UpdatedHashSum"
-        new_ip = "UpdatedIpAddr"
+        new_version = "UpdatedVersion"
         response = self.client.post(
             '/convey/cmd/',
             {
                 'version': new_version,
                 'hash_sum': bot.hash_sum,
-                'ip_addr': new_ip
             }
         )
         self.assertEqual(response.status_code, 200)
         bot = Bot.objects.all()[0]
         self.assertEqual(bot.version, new_version)
-        self.assertEqual(bot.ip_addr, new_ip)

@@ -26,7 +26,6 @@ class Bot(models.Model):
     operating_sys = models.CharField(max_length=50)
     user = models.CharField(max_length=20)
     ip_addr = models.CharField(max_length=16)
-    geolocation = models.CharField(max_length=100)
     last_contact = models.DateTimeField(default=timezone.now)
     completed_cmds = models.ManyToManyField(
         Command,

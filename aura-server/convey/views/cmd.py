@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from convey.models import Bot, Command, Bot_Command
+from convey.views.utils import get_ip
 
 # Grab a Command object based on a hash_sum or group number
 # If no command exists for the query, return None
@@ -33,12 +34,12 @@ def cmd(request):
         version = request.POST['version']
     else:
         version = None
+
     hash_sum = request.POST['hash_sum']
-    ip_addr = request.POST['ip_addr']
 
     bot = get_object_or_404(Bot, hash_sum=hash_sum)
     bot.version = version
-    bot.ip_addr = ip_addr
+    bot.ip_addr = get_ip(request)
     bot.last_contact = timezone.now()
     bot.save()
 

