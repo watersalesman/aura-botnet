@@ -10,8 +10,6 @@ const std::string HASH_TYPE = "sha256sum";
 
 const int SEED_RNG_ITERATIONS = 1000000;
 
-const std::string GET_IP_URL = "https://now-dns.com/ip";
-
 #ifdef WIN32
 
 const std::string INSTALL_DIR =

