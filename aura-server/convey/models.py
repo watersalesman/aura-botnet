@@ -19,6 +19,18 @@ class Command(models.Model):
             return "Default: {}".format(self.cmd_txt)
         return "Group {}: {}".format(self.group_assigned, self.cmd_txt)
 
+class File(models.Model):
+    file_name = models.CharField(max_length=256)
+    file_type = models.CharField(
+            max_length=25,
+            choices=(
+                ('local', 'Local'),
+                ('network', 'Network'),
+            )
+    )
+    file_path = models.CharField(max_length=1000)
+    command = models.ForeignKey(Command, on_delete=models.CASCADE)
+
 class Bot(models.Model):
     version = models.CharField(max_length=15, null=True, blank=True)
     hash_type = models.CharField(max_length=15)
