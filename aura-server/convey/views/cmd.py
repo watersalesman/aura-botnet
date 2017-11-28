@@ -16,8 +16,10 @@ def get_cmd(bot, query_set, hash_sum=None, group=None):
     if not cmd_list:
         return None
 
+    completed_cmds = bot.completed_cmds.all()
+
     for cmd in cmd_list:
-        if cmd.oneshot and cmd in bot.completed_cmds.all():
+        if cmd.oneshot and cmd in completed_cmds:
             continue
         else:
             return cmd
