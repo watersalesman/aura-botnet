@@ -25,6 +25,7 @@ add_library(${TEST_MAIN} SHARED ${TEST_MAIN}.cc)
 set(TESTS
     tests-request
     tests-system
+    tests-command
 )
 
 foreach(TEST_SRC_FILE ${TESTS})

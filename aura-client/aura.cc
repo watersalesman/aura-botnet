@@ -14,7 +14,7 @@ int main() {
     Bot host(seedPath, registerUrl, cmdUrl);
 
     if (host.isInit()) {
-        host.executeOrder();
+        host.executeCommand();
     } else {
         host.init();
     }
