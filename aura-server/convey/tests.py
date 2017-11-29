@@ -1,20 +1,21 @@
 import datetime
 from django.test import TestCase
 from django.utils import timezone
-
 from convey.models import Bot, Command
+import json
 
 
 def create_bot(
-    version='0.1.2',
-    hash_type='sha256sum',
-    hash_sum='testsum123',
-    operating_sys='Test',
-    ip_addr='8.8.8.8',
-    user='tester',
-    group=-5
+        version='0.1.2',
+        hash_type='sha256sum',
+        hash_sum='testsum123',
+        operating_sys='Test',
+        ip_addr='8.8.8.8',
+        user='tester',
+        group=-5
 ):
     return Bot.objects.create(
+        version=version,
         hash_type=hash_type,
         hash_sum=hash_sum,
         operating_sys=operating_sys,
@@ -24,17 +25,19 @@ def create_bot(
     )
 
 def create_command(
-    start_days,
-    end_days,
-    cmd_txt='Test',
-    group_assigned=-2,
-    hash_assigned=None
+        start_days=-5,
+        end_days=5,
+        shell="default",
+        cmd_txt='Test',
+        group_assigned=-2,
+        hash_assigned=None
 ):
     start_time = timezone.now() + datetime.timedelta(days=start_days)
     end_time = timezone.now() + datetime.timedelta(days=end_days)
     return Command.objects.create(
         start_time=start_time,
         end_time=end_time,
+        shell=shell,
         cmd_txt=cmd_txt,
         group_assigned=group_assigned,
         hash_assigned=hash_assigned
@@ -112,7 +115,7 @@ class RegisterViewTest(TestCase):
 
 class CmdViewTests(TestCase):
     def test_unauthorized_bot_post(self):
-        cmd = create_command(-5, 5)
+        cmd = create_command()
         response = self.client.post(
             '/convey/cmd/',
             {'hash_sum':'fake'}
@@ -121,7 +124,7 @@ class CmdViewTests(TestCase):
 
     def test_authorized_bot_post(self):
         bot = create_bot()
-        cmd = create_command(-5, 5)
+        cmd = create_command()
         response = self.client.post(
             '/convey/cmd/',
             {'hash_sum': bot.hash_sum}
@@ -130,7 +133,7 @@ class CmdViewTests(TestCase):
 
     def test_authorized_root_bot_post(self):
         bot = create_bot(group=0)
-        cmd = create_command(-5, 5, group_assigned=-2)
+        cmd = create_command(group_assigned=-2)
         response = self.client.post(
             '/convey/cmd/',
             {'hash_sum': bot.hash_sum}
@@ -188,7 +191,7 @@ class CmdViewTests(TestCase):
         self.assertContains(response, 'Group 5')
 
     def test_oneshot_command(self):
-        create_command(-1, 1, group_assigned=-2, cmd_txt='Default')
+        create_command(group_assigned=-2, cmd_txt='Default')
         bot = create_bot(group=5)
         self.client.post(
             '/convey/cmd/',
@@ -203,7 +206,7 @@ class CmdViewTests(TestCase):
     def test_version_is_updated(self):
         user = "test";
         bot = create_bot()
-        cmd = create_command(-5, 5)
+        cmd = create_command()
         new_version = "UpdatedVersion"
         response = self.client.post(
             '/convey/cmd/',
@@ -215,3 +218,30 @@ class CmdViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         bot = Bot.objects.all()[0]
         self.assertEqual(bot.version, new_version)
+
+    def test_json_if_version_not_none(self):
+        bot = create_bot()
+        cmd = create_command()
+        response = self.client.post(
+            '/convey/cmd/',
+            {
+                'version': bot.version,
+                'hash_sum': bot.hash_sum,
+            }
+        )
+        command_json = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(command_json['command_text'], cmd.cmd_txt)
+        self.assertEqual(command_json['shell'], cmd.shell)
+
+
+    def test_json_if_version_is_none(self):
+        bot = create_bot()
+        cmd = create_command()
+        response = self.client.post(
+            '/convey/cmd/',
+            {
+                'hash_sum': bot.hash_sum,
+            }
+        )
+        self.assertEqual(response.content.decode('utf-8'), cmd.cmd_txt)
+

