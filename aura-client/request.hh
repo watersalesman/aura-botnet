@@ -103,7 +103,7 @@ class WinINet {
     ~WinINet();
     std::string getHost() { return _host; }
     int getPort() { return _port; }
-    void request(const std::string& httpMethod, INTERNET_SCHEME scheme,
+    void request(const std::string& method, INTERNET_SCHEME scheme,
                  const std::string& uri, const std::string& data);
     std::string getResponse() { return _responseStr; }
 
@@ -138,9 +138,10 @@ WinINet::~WinINet() {
     InternetCloseHandle(_internet);
 }
 
-void WinINet::request(const std::string& httpMethod, INTERNET_SCHEME scheme,
+void WinINet::request(const std::string& method, INTERNET_SCHEME scheme,
                       const std::string& uri, const std::string& data) {
     _responseStr = "";
+    std::string httpMethod = method;
 
     if (httpMethod != "POST") {
         httpMethod = "GET";
