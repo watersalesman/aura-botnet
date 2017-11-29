@@ -6,7 +6,7 @@ The botnet's C2 server utilizes the Django framework as the backend.
 It is far from the most efficient web server, but this is offset by the
 following:
 * Django is extremely portable and therefore good for testing/educational
-purposes. The server and database are contained within the `aura-server`
+purposes. The server and database are contained within the [`aura-server`](aura-server)
 folder.
 * Django includes a very intuitive and powerful admin site that can be used
 for managing bots and commands
@@ -20,9 +20,9 @@ accessed after setting up a superuser (see below).
 Database
 ---
 The C2 server is currently configured to use a SQLite3 database,
-`bots.sqlite3`. The current configuration can be changed in the *settings.py*
-file under `aura-server/aura`. You may wish to use MySQL, or even PostgreSQL
-instead; this easy to do thanks to Django's portable database API.
+`bots.sqlite3`. The current configuration can be changed in [`aura-server/aura/settings.py`](aura-server/aura/settings.py).
+You may wish to use MySQL, or even PostgreSQL instead; this easy to do thanks
+to Django's portable database API.
 
 Bot Clients
 ---
@@ -40,10 +40,12 @@ have the client and other files masquerading as configuration files.
 
 Getting Started: C2 Server
 ---
+### Docker
 The Docker image can be found [here](https://hub.docker.com/r/watersalesman/aura-c2/).
 Follow the instructions below to run the server normally.
 
-To initialize the SQLite3 database, simply change into the `aura-server`
+### From Git
+To initialize the SQLite3 database, simply change into the [`aura-server`](aura-server)
 directory and run:
 ```
 ./manage.py migrate
@@ -62,16 +64,22 @@ Finally, run the following to start the server:
 ```
 ./runserver.sh
 ```
-`runserver.sh` is just a wrapper around `manage.py runserver` with some default
+[`runserver.sh`](aura-server/runserver.sh) is just a wrapper around `manage.py runserver` with some default
 options that runs the server on port 41450. This can be easily edited or
 bypassed altogether.
 
 Geting Started: Bot Clients
 ---
+The client executable or script need to be run in the same folder as
+any necessary components (systemd services for Linux clients and launcher.vbs
+for Powershell) on the target machine, or installed via web delivery (see
+below).
+
 You can choose whichever client you feel is most appropriate for the platform
 and use case.
 
-For the Linux C++ client, change into the source directory (`aura-client`).
+### C++ Client
+For the Linux C++ client, change into the source directory ([`aura-client`](aura-client)).
 If the repo was not cloned with the `--recursive` flag, pull the needed
 dependencies by running:
 ```
@@ -88,31 +96,29 @@ For building the Windows C++ client, you can find various methods of using
 CMake on Windows
 [here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
 
+Catch2 unit tests can be found under [`aura-client/tests/`](aura-client/tests/)
+
+### Rust Client
 For the Rust client, you will need Rust installed on the platform that you wish
 to compile for. Unfortunately, there is no simple method of cross-compiling that
-I am aware of. Go into the source directory (`alt-clients/rust/rust-linux` or
-`alt-clients/rust/rust-windows`) and run:
+I am aware of. Go into the source directory ([`alt-clients/rust/rust-linux`](alt-clients/rust/rust-linux) or
+[`alt-clients/rust/rust-windows`](alt-clients/rust/rust-windows) and run:
 ```
 cargo build --release
 ```
 The binary will be sent to `client/rust-*/target/release/`.
 
+### Powershell and Bash
 The Powershell and Bash clients simply need to be executed on the target
 machine.
 
-The client executable or script need to be run in the same folder as
-any necessary components (systemd services for Linux clients and launcher.vbs
-for Powershell) on the target machine, or installed via web delivery (see
-below).
-
 Configuring Commands
 ---
-
 These can easily be managed through the Django shell or admin site. The
 client periodically communicate with the specified server using POST
 requests to receive a command (default is every 5 minutes). Commands can be set
 to run for specific bot groups defined by operating system and user privilege.
-This is specified in `aura-server/groups.json`. The only reserved group
+This is specified in [`aura-server/groups.json`](aura-server/groups.json). The only reserved group
 numbers are `-1`, for priority commands that are run by all bots, and `-2`, for
 default commands that are run by all bots only if there is no other command to run;
 you can also assign commands to individual bots using the hash of their seed.
@@ -157,12 +163,10 @@ on your devices.
 
 TODO
 ---
-- Cleanup code styling and optimize Django views
-- Add support for "modules" to be run easily on arbitrary clients. E.g.: Start
-an interactive shell, grab arbitrary system files, install keylogger, spread
-using various exploits etc.
-- Create clients for mobile devices
-- Implement compatibility with running C2 server as a hidden Tor service
+* Add support for communication via JSON
+* Use JSON support to send file dependencies for commands
+* Support various shells to execute command in
+* Add significantly more unit tests
 
 <h2>This repo is for testing purposes only. This is not meant to be
 implemented in any real world applications except for demonstrations.</h2>
