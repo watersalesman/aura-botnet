@@ -15,7 +15,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static bool copyFile(std::string src, std::string dst) {
+namespace util {
+
+bool copyFile(std::string src, std::string dst) {
     std::ifstream srcFile(src, std::ios::binary);
     std::ofstream dstFile(dst, std::ios::binary | std::ios::trunc);
     if (srcFile.is_open() && dstFile.is_open()) {
@@ -25,11 +27,9 @@ static bool copyFile(std::string src, std::string dst) {
         return false;
 }
 
-static int linkFile(std::string src, std::string dst) {
+int linkFile(std::string src, std::string dst) {
     return link(src.c_str(), dst.c_str());
 }
-
-namespace util {
 
 std::string getCmdOutput(const std::string& cmd) {
     FILE* pipe;
@@ -91,7 +91,7 @@ void installFiles() {
         timerPath = SYS_SERVICE_DEST + "/" + TIMER;
 
         // Change service name back to normal after moving if root
-        copyFile(SYS_SERVICE, SYS_SERVICE_DEST + "/" + SERVICE);
+        util::copyFile(SYS_SERVICE, SYS_SERVICE_DEST + "/" + SERVICE);
     } else {
         std::string homeDir = std::getenv("HOME");
         std::string userServiceDir = homeDir + "/" + SERVICE_DEST;
@@ -99,12 +99,12 @@ void installFiles() {
         mkdirCmd += userServiceDir;
         timerPath = userServiceDir + "/" + TIMER;
 
-        copyFile(SERVICE, userServiceDir + "/" + SERVICE);
+        util::copyFile(SERVICE, userServiceDir + "/" + SERVICE);
     }
 
     std::system(mkdirCmd.c_str());
-    copyFile(BIN, binPath);
-    copyFile(TIMER, timerPath);
+    util::copyFile(BIN, binPath);
+    util::copyFile(TIMER, timerPath);
 
     // Ensure that binary is executable for owner
     chmod(binPath.c_str(), S_IRWXU);
@@ -134,11 +134,11 @@ void initRecurringJob() {
 bool IS_SUPERUSER;
 bool IS_SUPERUSER_IS_CACHED = false;
 
-static bool copyFile(std::string src, std::string dst) {
+namespace util {
+
+bool copyFile(std::string src, std::string dst) {
     return CopyFile(src.c_str(), dst.c_str(), false);
 }
-
-namespace util {
 
 std::string getCmdOutput(const std::string& cmd) {
     FILE* pipe;
@@ -205,7 +205,7 @@ namespace install {
 void installFiles() {
     std::string installDir = util::getInstallDir();
     std::system(("mkdir " + installDir).c_str());
-    copyFile(BIN, installDir + BIN_NEW);
+    util::copyFile(BIN, installDir + BIN_NEW);
 }
 
 void initRecurringJob() {

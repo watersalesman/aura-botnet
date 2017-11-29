@@ -38,7 +38,6 @@ std::string PostForm::toString() {
 #include <curl/curl.h>
 #include <cstring>
 
-namespace {
 
 // Write function for returning curl response as a string
 size_t WriteCallback(void* contents, size_t size, size_t nmemb,
@@ -76,8 +75,6 @@ std::string requestHandler(const std::string& url,
 
     return response;
 }
-
-}  // namespace
 
 namespace request {
 
