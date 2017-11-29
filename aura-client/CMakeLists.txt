@@ -7,7 +7,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g")
 
 # Add include directories
 set(PICOSHA2_INCLUDE "${CMAKE_SOURCE_DIR}/deps/PicoSHA2/")
-include_directories(${PICOSHA2_INCLUDE})
+set(RAPIDJSON_INCLUDE "${CMAKE_SOURCE_DIR}/deps/rapidjson/include/")
+include_directories(${PICOSHA2_INCLUDE} ${RAPIDJSON_INCLUDE})
 
 # Set libraries
 set(LINUX_LIBS curl)

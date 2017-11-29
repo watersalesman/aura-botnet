@@ -4,3 +4,6 @@
 [submodule "aura-client/deps/Catch2"]
 	path = aura-client/deps/Catch2
 	url = https://github.com/catchorg/Catch2
+[submodule "aura-client/deps/rapidjson"]
+	path = aura-client/deps/rapidjson
+	url = https://github.com/Tencent/rapidjson

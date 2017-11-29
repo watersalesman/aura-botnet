@@ -7,7 +7,13 @@ set(WIN32_LIBS urlmon wininet)
 # Set include directories for needed header files
 set(CATCH2_INCLUDE "${PROJECT_SOURCE_DIR}/deps/Catch2/single_include/")
 set(PICOSHA2_INCLUDE "${PROJECT_SOURCE_DIR}/deps/PicoSHA2/")
-include_directories(${PROJECT_SOURCE_DIR} ${CATCH2_INCLUDE} ${PICOSHA2_INCLUDE})
+set(RAPIDJSON_INCLUDE "${PROJECT_SOURCE_DIR}/deps/rapidjso/include/")
+include_directories(
+    ${PROJECT_SOURCE_DIR}
+    ${CATCH2_INCLUDE}
+    ${PICOSHA2_INCLUDE}
+    ${RAPIDJSON_INCLUDE}
+)
 
 # Set Catch2 main file as library
 set(TEST_MAIN tests-main)
