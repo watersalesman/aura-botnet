@@ -1,7 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (Aura)
 add_definitions(-DAURA_VERSION="0.1.2")
-enable_testing()
 
 set(BIN aura)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g")
@@ -26,4 +25,8 @@ if(WIN32)
     target_link_libraries(${BIN} ${WIN32_LIBS})
 endif()
 
-add_subdirectory(tests)
+# Define BUILD_TESTING to build tests
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

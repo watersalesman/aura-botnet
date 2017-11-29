@@ -88,7 +88,7 @@ git submodule update --init --recursive
 
 Then build by running:
 ```
-cmake .
+cmake .    # Run with "-DBUILD_TESTING=ON" to build tests
 make
 ```
 
@@ -96,7 +96,7 @@ For building the Windows C++ client, you can find various methods of using
 CMake on Windows
 [here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
 
-Catch2 unit tests can be found under [`aura-client/tests/`](aura-client/tests/)
+Catch2 unit tests can be found under [`aura-client/tests/`](aura-client/tests/).
 
 ### Rust Client
 For the Rust client, you will need Rust installed on the platform that you wish
