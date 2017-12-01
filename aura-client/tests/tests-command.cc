@@ -19,7 +19,7 @@ SCENARIO("using Command class") {
         }
 
         THEN("execute command") {
-            cmd.execute();
+            REQUIRE(util::popenSubprocess(cmd.execute()) == "");
             REQUIRE(std::remove(testFile.c_str()) == 0);
         }
     }
@@ -30,6 +30,10 @@ SCENARIO("using Command class") {
 
         THEN("return empty commandText") {
             REQUIRE(cmd.commandText == "");
+        }
+
+        THEN("execute() return empty string") {
+            REQUIRE(util::popenSubprocess(cmd.execute()) == "");
         }
     }
 }

