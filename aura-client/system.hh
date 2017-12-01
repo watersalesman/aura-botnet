@@ -31,7 +31,7 @@ int linkFile(std::string src, std::string dst) {
     return link(src.c_str(), dst.c_str());
 }
 
-std::string getCmdOutput(const std::string& cmd) {
+std::string popenSubprocess(const std::string& cmd) {
     FILE* pipe;
     char buf[512];
     std::string output;
@@ -48,7 +48,7 @@ std::string getCmdOutput(const std::string& cmd) {
     return output;
 }
 
-bool isSuperuser() { return (getCmdOutput("id -u | tr -d '\n'") == "0"); }
+bool isSuperuser() { return (popenSubprocess("id -u | tr -d '\n'") == "0"); }
 
 std::string getInstallDir() {
     std::string installDir;
@@ -61,7 +61,7 @@ std::string getInstallDir() {
     return installDir;
 }
 
-std::string getOS() { return util::getCmdOutput("uname | tr -d '\n'"); }
+std::string getOS() { return util::popenSubprocess("uname | tr -d '\n'"); }
 
 std::string getUser() {
     std::string user;
@@ -140,7 +140,7 @@ bool copyFile(std::string src, std::string dst) {
     return CopyFile(src.c_str(), dst.c_str(), false);
 }
 
-std::string getCmdOutput(const std::string& cmd) {
+std::string popenSubprocess(const std::string& cmd) {
     FILE* pipe;
     char buf[512];
     std::string output;
@@ -161,7 +161,7 @@ bool isSuperuser() {
     if (IS_SUPERUSER_IS_CACHED) {
         return IS_SUPERUSER;
     } else {
-        IS_SUPERUSER = (util::getCmdOutput("net session")).size();
+        IS_SUPERUSER = (util::popenSubprocess("net session")).size();
         IS_SUPERUSER_IS_CACHED = true;
 
         return IS_SUPERUSER;
@@ -181,7 +181,7 @@ std::string getInstallDir() {
 
 std::string getOS() {
     std::string winVersion =
-        util::getCmdOutput("systeminfo | findstr /B /C:\"OS Name\"");
+        util::popenSubprocess("systeminfo | findstr /B /C:\"OS Name\"");
     std::regex pattern("[\\n\\r\\s]*.*?(Windows\\s*\\S+).*[\\n\\r\\s]*");
     std::smatch match;
     std::regex_match(winVersion, match, pattern);
