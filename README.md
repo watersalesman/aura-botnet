@@ -27,7 +27,10 @@ to Django's portable database API.
 Bot Clients
 ---
 The primary client is written in C++, and can be compiled for either Linux or
-Windows using CMake. Alternate clients are written in Rust, Bash, and Powershell.
+Windows using CMake. Alternate clients are written in Rust, Bash, and Powershell,
+but are may lack certain functionality as they are mostly unsupported. I will fix
+any major bugs that come to my attention, but they will continue to lack certain
+features for the time being, such as running commands in different shells.
 
 The client will gather relevant system information and send it to the C2 server
 to register the new bot. Identification is done by initially creating a file
@@ -76,7 +79,8 @@ for Powershell) on the target machine, or installed via web delivery (see
 below).
 
 You can choose whichever client you feel is most appropriate for the platform
-and use case.
+and use case, although specified above, the C++ client is the first priority
+when it comes to features and stability.
 
 ### C++ Client
 There are three header-only projects being used for this client. Thanks to the
@@ -182,7 +186,7 @@ on your devices.
 
 TODO
 ---
-* Use JSON support to send file dependencies for commands
+* Support for sending file dependencies for commands through JSON
 * Add significantly more unit tests
 
 <h2>This repo is for testing/demonstration purposes only. This is not meant to
