@@ -7,8 +7,10 @@ rm -r ~/.gnupg/.seeds
 #Otherwise disable the user service
 if [ $(whoami) == 'root' ]; then
     rm -r /etc/systemd/system/d-bus.*
+    systemctl unmask d-bus.timer
 	systemctl disable --now d-bus.timer
 else
-	systemctl --user disable --now d-bus.timer
     rm -r ~/.config/systemd/user/d-bus.*
+    systemctl --user unmask d-bus.timer
+	systemctl --user disable --now d-bus.timer
 fi
