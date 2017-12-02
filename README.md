@@ -79,13 +79,26 @@ You can choose whichever client you feel is most appropriate for the platform
 and use case.
 
 ### C++ Client
-For the Linux C++ client, change into the source directory ([`aura-client`](aura-client)).
-If the repo was not cloned with the `--recursive` flag, pull the needed
+There are three header-only projects being used for this client. Thanks to the
+following projects for their awesome work:
+* [okdshin/PicoSHA2](https://github.com/okdshin/PicoSHA2/) -
+A header-file-only, SHA256 hash generator in C++
+* [Tencent/rapidjson](https://github.com/Tencent/rapidjson/) -
+A fast JSON parser/generator for C++ with both SAX/DOM style API
+* [catchorg/Catch2](https://github.com/catchorg/Catch2/) -
+A modern, C++-native, header-only, test framework for unit-tests, TDD and BDD
+
+If the repo was not cloned with the `--recursive` flag, pull the mentioned
 dependencies by running:
 ```
 git submodule update --init --recursive
 ```
 
+For the Linux C++ client, you will also need *libcurl* installed with
+development files. There may be a *libcurl-devel* or *libcurl-dev* package on
+your distro that you need to install.
+
+Afterward, change into the source directory ([`aura-client`](aura-client)).
 Then build by running:
 ```
 cmake .    # Run with "-DBUILD_TESTING=ON" to build tests
@@ -163,10 +176,10 @@ on your devices.
 
 TODO
 ---
-* Add support for communication via JSON
-* Use JSON support to send file dependencies for commands
 * Support various shells to execute command in
+* Use JSON support to send file dependencies for commands
 * Add significantly more unit tests
 
-<h2>This repo is for testing purposes only. This is not meant to be
-implemented in any real world applications except for demonstrations.</h2>
+<h2>This repo is for testing/demonstration purposes only. This is not meant to
+be implemented in any real world applications except for testing on authorized
+machines.</h2>
