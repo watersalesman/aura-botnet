@@ -5,6 +5,9 @@ SCENARIO("copying files around") {
 
     GIVEN("the current binary being run") {
         std::string bin = "tests-system";
+#ifdef WIN32
+		bin += ".exe";
+#endif
         std::string binCopy = "tests-system-COPY";
 
         THEN("make a copy of the file") {

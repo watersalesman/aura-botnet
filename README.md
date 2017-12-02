@@ -127,16 +127,22 @@ machine.
 
 Configuring Commands
 ---
-These can easily be managed through the Django shell or admin site. The
-client periodically communicate with the specified server using POST
-requests to receive a command (default is every 5 minutes). Commands can be set
-to run for specific bot groups defined by operating system and user privilege.
-This is specified in [`aura-server/groups.json`](aura-server/groups.json). The only reserved group
-numbers are `-1`, for priority commands that are run by all bots, and `-2`, for
-default commands that are run by all bots only if there is no other command to run;
-you can also assign commands to individual bots using the hash of their seed.
-Each command can be given a start time and end time. Oneshot commands will only
-run once on each bot.
+These can easily be managed through the Django admin site or shell. The
+client periodically communicates with the specified server using POST
+requests to receive a command (default is every 5 minutes). Commands are
+received as a JSON object specifying the shell to run the command in, and
+the command to execute.
+
+Commands can be set to run for specific bot groups defined by operating
+system and user privilege.  This is specified in
+[`aura-server/groups.json`](aura-server/groups.json).
+The only reserved group numbers are `-1`, for priority commands that are
+run by all bots, and `-2`, for default commands that are run by all bots
+only if there is no other command to run; you can also assign commands to
+individual bots using the hash of their seed.
+
+Each command can be given a start time and end time. Oneshot commands will
+only run once on each bot.
 
 Client Web Delivery
 ---
@@ -176,7 +182,6 @@ on your devices.
 
 TODO
 ---
-* Support various shells to execute command in
 * Use JSON support to send file dependencies for commands
 * Add significantly more unit tests
 

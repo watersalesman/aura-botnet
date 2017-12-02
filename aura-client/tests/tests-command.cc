@@ -1,12 +1,18 @@
 #include "catch.hpp"
 #include "aura.hh"
+#include <iostream>
 
 SCENARIO("using Command class") {
 
     GIVEN("a test JSON command") {
         std::string testFile = "hello.txt";
+        std::string command = "touch ";
+#ifdef WIN32
+        command = "type nul > ";
+#endif
         std::string response =
-            "{\"shell\": \"default\", \"command_text\": \"touch "
+            "{\"shell\": \"default\", \"command_text\": \""
+            + command
             + testFile
             + "\"}";
         rapidjson::Document json;
@@ -14,7 +20,7 @@ SCENARIO("using Command class") {
         Command cmd(response);
 
         THEN("construct construct successfully") {
-            REQUIRE(cmd.commandText == "touch hello.txt");
+            REQUIRE(cmd.commandText == command + testFile);
             REQUIRE(json.IsObject());
         }
 
@@ -28,12 +34,51 @@ SCENARIO("using Command class") {
         std::string response = "<>?><<<<<><NOTVALID";
         Command cmd(response);
 
-        THEN("return empty commandText") {
+        THEN("set empty commandText") {
             REQUIRE(cmd.commandText == "");
         }
 
-        THEN("execute() return empty string") {
-            REQUIRE(util::popenSubprocess(cmd.execute()) == "");
+        THEN("set default shell") {
+            REQUIRE(cmd.shell == "default");
+        }
+
+        THEN("execute() returns empty string") {
+            REQUIRE(cmd.execute() == "");
         }
     }
+
+#ifdef WIN32
+    GIVEN("a command object set to run in PowerShell") {
+        std::string testFile = "hello.txt";
+        std::string command = "echo hello > " + testFile;
+        std::string response =
+            "{\"shell\": \"powershell\", \"command_text\": \""
+            + command
+            + "\"}";
+        Command cmd(response);
+
+        THEN("execute() runs properly") {
+            cmd.execute();
+            REQUIRE(std::remove(testFile.c_str()) == 0);
+        }
+
+    }
+#endif
+#ifdef __linux__
+    GIVEN("a command object set to run in Bash") {
+        std::string testFile = "hello.txt";
+        std::string command = "echo hello > " + testFile;
+        std::string response =
+            "{\"shell\": \"bash\", \"command_text\": \""
+            + command
+            + "\"}";
+        Command cmd(response);
+
+        THEN("execute() runs properly") {
+            cmd.execute();
+            REQUIRE(std::remove(testFile.c_str()) == 0);
+        }
+
+    }
+#endif
 }
