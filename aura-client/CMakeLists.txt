@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.0)
 project (Aura)
 add_definitions(-DAURA_VERSION="0.1.2")
 
