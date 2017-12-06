@@ -1,9 +1,13 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required(VERSION 3.9)
 project (Aura)
 add_definitions(-DAURA_VERSION="0.1.2")
 
 set(BIN aura)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g")
+
+# Set default CMake build type
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif(NOT CMAKE_BUILD_TYPE)
 
 # Add include directories
 set(PICOSHA2_INCLUDE "${CMAKE_SOURCE_DIR}/deps/PicoSHA2/")
@@ -27,7 +31,7 @@ if(WIN32)
 endif()
 
 # Define BUILD_TESTING to build tests
-if(BUILD_TESTING)
+if(CMAKE_BUILD_TYPE MATCHES Debug)
     enable_testing()
     add_subdirectory(tests)
 endif()

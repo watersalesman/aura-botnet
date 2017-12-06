@@ -105,7 +105,7 @@ your distro that you need to install.
 Afterward, change into the source directory ([`aura-client`](aura-client)).
 Then build by running:
 ```
-cmake .    # Run with "-DBUILD_TESTING=ON" to build tests
+cmake .    # Run with "-DCMAKE_BUILD_TYPE=Debug" to build tests
 make
 ```
 
