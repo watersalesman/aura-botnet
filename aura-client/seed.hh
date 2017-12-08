@@ -6,21 +6,21 @@
 
 class Seed {
    public:
-    Seed(const std::string& filePath) { _path = filePath; }
+    Seed(const std::string& filePath) { path_ = filePath; }
     bool exists();
     void initSeed();
     void getSeed();
-    std::string getHash() { return _hash; }
+    std::string getHash() { return hash_; }
 
    private:
-    std::string _path, _hash;
+    std::string path_, hash_;
 
     void calcHash(const std::string&);
     void calcHash(std::ifstream&);
 };
 
 bool Seed::exists() {
-    std::ifstream inFile(_path);
+    std::ifstream inFile(path_);
     return (inFile.good());
 }
 
@@ -40,7 +40,7 @@ std::string genSeedData(int rngNumIter) {
 
 void Seed::initSeed() {
     std::string seedData;
-    std::ofstream seedFile(_path, std::ios::binary | std::ios::trunc);
+    std::ofstream seedFile(path_, std::ios::binary | std::ios::trunc);
     if (seedFile.is_open()) {
         seedData = genSeedData(SEED_RNG_ITERATIONS);
         seedFile << seedData;
@@ -51,13 +51,13 @@ void Seed::initSeed() {
 
 void Seed::getSeed() {
     if (exists()) {
-        std::ifstream seedFile(_path, std::ios::binary);
+        std::ifstream seedFile(path_, std::ios::binary);
         if (seedFile.is_open()) calcHash(seedFile);
     }
 }
 
 void Seed::calcHash(const std::string& str) {
-    _hash = picosha2::hash256_hex_string(str);
+    hash_ = picosha2::hash256_hex_string(str);
 }
 
 // This method may use less memory than getting hex_str from string
@@ -66,5 +66,5 @@ void Seed::calcHash(std::ifstream& seedFile) {
     picosha2::hash256(std::istreambuf_iterator<char>(seedFile),
                       std::istreambuf_iterator<char>(), hash.begin(),
                       hash.end());
-    _hash = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
+    hash_ = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
 }

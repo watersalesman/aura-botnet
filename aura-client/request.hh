@@ -13,18 +13,18 @@ class PostForm {
     std::string toString();
 
    private:
-    std::vector<std::tuple<std::string, std::string>> _data;
+    std::vector<std::tuple<std::string, std::string>> data_;
 };
 
 void PostForm::addField(const std::string& field, const std::string& value) {
-    _data.push_back(std::make_tuple(field, value));
+    data_.push_back(std::make_tuple(field, value));
 }
 
 std::string PostForm::toString() {
     std::string formString, field, value;
-    for (int i = 0; i < _data.size(); ++i) {
+    for (int i = 0; i < data_.size(); ++i) {
         if (i) formString += "&";
-        std::tie(field, value) = _data[i];
+        std::tie(field, value) = data_[i];
         formString += field + "=" + value;
     }
 
@@ -100,46 +100,46 @@ class WinINet {
    public:
     WinINet(const char* host, int port);
     ~WinINet();
-    std::string getHost() { return _host; }
-    int getPort() { return _port; }
+    std::string getHost() { return host_; }
+    int getPort() { return port_; }
     void request(const std::string& method, INTERNET_SCHEME scheme,
                  const std::string& uri, const std::string& data);
-    std::string getResponse() { return _responseStr; }
+    std::string getResponse() { return responseStr_; }
 
    private:
-    std::string _host;
-    int _port;
-    char _userAgent[512];
-    DWORD _uaSize;
-    char _buffer[4000];
-    DWORD _bytesRead;
-    std::string _responseStr;
-    HINTERNET _internet, _connection, _request;
+    std::string host_;
+    int port_;
+    char userAgent_[512];
+    DWORD usSize_;
+    char buffer_[4000];
+    DWORD bytesRead_;
+    std::string responseStr_;
+    HINTERNET internet_, connection_, request_;
 };
 
 WinINet::WinINet(const char* host, int port = INTERNET_DEFAULT_HTTP_PORT) {
-    _host = host;
-    _port = port;
+    host_ = host;
+    port_ = port;
 
-    _uaSize = sizeof(_userAgent);
-    ObtainUserAgentString(0, _userAgent, &_uaSize);
+    usSize_ = sizeof(userAgent_);
+    ObtainUserAgentString(0, userAgent_, &usSize_);
 
-    _internet =
-        InternetOpenA(_userAgent, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    internet_ =
+        InternetOpenA(userAgent_, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 
-    _connection = InternetConnectA(_internet, host, port, NULL, NULL,
+    connection_ = InternetConnectA(internet_, host, port, NULL, NULL,
                                    INTERNET_SERVICE_HTTP, 0, 0);
 }
 
 WinINet::~WinINet() {
-    InternetCloseHandle(_request);
-    InternetCloseHandle(_connection);
-    InternetCloseHandle(_internet);
+    InternetCloseHandle(request_);
+    InternetCloseHandle(connection_);
+    InternetCloseHandle(internet_);
 }
 
 void WinINet::request(const std::string& method, INTERNET_SCHEME scheme,
                       const std::string& uri, const std::string& data) {
-    _responseStr = "";
+    responseStr_ = "";
     std::string httpMethod = method;
 
     if (httpMethod != "POST") {
@@ -153,10 +153,10 @@ void WinINet::request(const std::string& method, INTERNET_SCHEME scheme,
     }
 
     // Create request
-    _request = HttpOpenRequestA(_connection, httpMethod.c_str(), uri.c_str(),
+    request_ = HttpOpenRequestA(connection_, httpMethod.c_str(), uri.c_str(),
                                 "HTTP/1.1", NULL, NULL, requestFlags, NULL);
 
-    if (_request) {
+    if (request_) {
         // Prepare header and optional post form
         std::string header;
         if (httpMethod == "POST") {
@@ -168,15 +168,15 @@ void WinINet::request(const std::string& method, INTERNET_SCHEME scheme,
         int formlen = strlen(form);
 
         // Send request
-        BOOL requestSuccess = HttpSendRequestA(_request, header.c_str(),
+        BOOL requestSuccess = HttpSendRequestA(request_, header.c_str(),
                                                headerlen, form, formlen);
 
         // Read request response
         if (requestSuccess) {
-            while (InternetReadFile(_request, &_buffer, strlen(_buffer),
-                                    &_bytesRead) &&
-                   _bytesRead > 0) {
-                _responseStr.append(_buffer, _bytesRead);
+            while (InternetReadFile(request_, &buffer_, strlen(buffer_),
+                                    &bytesRead_) &&
+                   bytesRead_ > 0) {
+                responseStr_.append(buffer_, bytesRead_);
             }
         }
         delete[] form;
