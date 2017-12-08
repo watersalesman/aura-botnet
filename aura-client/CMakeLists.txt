@@ -20,13 +20,13 @@ set(WIN32_LIBS urlmon wininet)
 
 if(UNIX AND NOT APPLE)
     add_definitions(-DCURL_STATICLIB)
-    add_executable(${BIN} aura.cc aura.hh)
+    add_executable(${BIN} aura.cc)
     target_link_libraries(${BIN} ${LINUX_LIBS})
 endif()
 
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    add_executable(${BIN} aura.cc aura.hh)
+    add_executable(${BIN} aura.cc)
     target_link_libraries(${BIN} ${WIN32_LIBS})
 endif()
 

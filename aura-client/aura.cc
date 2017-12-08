@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 
-#include "aura.hh"
+#include "bot.hh"
 
 int main() {
     std::string registerUrl, cmdUrl, seedPath;
