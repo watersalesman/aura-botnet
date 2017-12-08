@@ -2,10 +2,11 @@
 #include <string>
 
 #include "command.hh"
-#include "constants.hh"
 #include "request.hh"
 #include "seed.hh"
 #include "system.hh"
+
+const std::string HASH_TYPE("SHA256");
 
 class C2Server {
    public:
