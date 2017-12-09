@@ -4,22 +4,22 @@
 #include <random>
 #include <string>
 
-class Seed {
+class AuthFile {
    public:
-    Seed(const std::string& file_path) { path_ = file_path; }
+    AuthFile(const std::string& file_path) { path_ = file_path; }
     bool Exists();
-    void InitSeed();
-    void GetSeed();
+    void Init();
+    void Retrieve();
     std::string GetHash() { return hash_; }
 
    private:
     std::string path_, hash_;
 
-    void CalcHash(const std::string&);
-    void CalcHash(std::ifstream&);
+    void CalcHash_(const std::string&);
+    void CalcHash_(std::ifstream&);
 };
 
-bool Seed::Exists() {
+bool AuthFile::Exists() {
     std::ifstream infile(path_);
     return (infile.good());
 }
@@ -38,32 +38,32 @@ std::string GenerateData(int rng_num_iter) {
     return random_data;
 }
 
-void Seed::InitSeed() {
+void AuthFile::Init() {
     std::string random_data;
-    std::ofstream seed_file(path_, std::ios::binary | std::ios::trunc);
-    if (seed_file.is_open()) {
-        random_data = GenerateData(SEED_RNG_ITERATIONS);
-        seed_file << random_data;
+    std::ofstream file_stream(path_, std::ios::binary | std::ios::trunc);
+    if (file_stream.is_open()) {
+        random_data = GenerateData(AUTH_FILE_RNG_ITERATIONS);
+        file_stream << random_data;
     }
 
-    CalcHash(random_data);
+    CalcHash_(random_data);
 }
 
-void Seed::GetSeed() {
+void AuthFile::Retrieve() {
     if (Exists()) {
-        std::ifstream seed_file(path_, std::ios::binary);
-        if (seed_file.is_open()) CalcHash(seed_file);
+        std::ifstream file_stream(path_, std::ios::binary);
+        if (file_stream.is_open()) CalcHash_(file_stream);
     }
 }
 
-void Seed::CalcHash(const std::string& str) {
+void AuthFile::CalcHash_(const std::string& str) {
     hash_ = picosha2::hash256_hex_string(str);
 }
 
 // This method may use less memory than getting hex_str from string
-void Seed::CalcHash(std::ifstream& seed_file) {
+void AuthFile::CalcHash_(std::ifstream& file_stream) {
     std::vector<unsigned char> hash(32);
-    picosha2::hash256(std::istreambuf_iterator<char>(seed_file),
+    picosha2::hash256(std::istreambuf_iterator<char>(file_stream),
                       std::istreambuf_iterator<char>(), hash.begin(),
                       hash.end());
     hash_ = picosha2::bytes_to_hex_string(hash.begin(), hash.end());

