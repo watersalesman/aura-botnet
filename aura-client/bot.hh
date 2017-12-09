@@ -30,9 +30,9 @@ class Bot {
 
 void Bot::Install(std::string install_dir) {
     // Install files and components
-    Installer installer(install_dir);
-    installer.InstallFiles();
-    installer.InitRecurringJob();
+    Installer bot_install(install_dir);
+    bot_install.InstallFiles();
+    bot_install.InitRecurringJob();
 }
 
 bool Bot::IsInstalled() { return auth_->Exists(); }
