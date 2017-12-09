@@ -41,4 +41,3 @@ foreach(TEST_SRC_FILE ${TESTS})
 
     add_test(${TEST_SRC_FILE} ${TEST_SRC_FILE})
 endforeach(TEST_SRC_FILE)
-

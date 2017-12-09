@@ -1,5 +1,5 @@
-#ifndef SYSTEM_HH
-#define SYSTEM_HH
+#ifndef UTIL_HH
+#define UTIL_HH
 
 #include <cstdio>
 #include <cstdlib>
@@ -10,12 +10,11 @@
 #include "constants.hh"
 #include "request.hh"
 
+namespace util {
+
 #ifdef __linux__
 
-#include <sys/stat.h>
 #include <unistd.h>
-
-namespace util {
 
 bool CopyFile(std::string source_path, std::string new_path) {
     std::ifstream source_file(source_path, std::ios::binary);
@@ -61,12 +60,12 @@ std::string GetInstallDir() {
     return install_dir;
 }
 
-std::string GetOS() { return util::PopenSubprocess("uname | tr -d '\n'"); }
+std::string GetOS() { return PopenSubprocess("uname | tr -d '\n'"); }
 
 std::string GetUser() {
     std::string user;
 
-    if (util::IsSuperuser()) {
+    if (IsSuperuser()) {
         user = "root";
     } else {
         user = std::getenv("USER");
@@ -74,55 +73,6 @@ std::string GetUser() {
 
     return user;
 }
-
-}  // namespace util
-
-namespace install {
-
-void InstallFiles() {
-    std::string mkdir_command, install_dir, timer_path, bin_path;
-
-    install_dir = util::GetInstallDir();
-    bin_path = install_dir + BIN_NEW;
-    mkdir_command = "mkdir -p " + util::GetInstallDir() + " ";
-
-    if (util::IsSuperuser()) {
-        mkdir_command += SYS_SERVICE_DEST;
-        timer_path = SYS_SERVICE_DEST + "/" + TIMER;
-
-        // Change service name back to normal after moving if root
-        util::CopyFile(SYS_SERVICE, SYS_SERVICE_DEST + "/" + SERVICE);
-    } else {
-        std::string home_dir = std::getenv("HOME");
-        std::string user_service_dir = home_dir + "/" + SERVICE_DEST;
-
-        mkdir_command += user_service_dir;
-        timer_path = user_service_dir + "/" + TIMER;
-
-        util::CopyFile(SERVICE, user_service_dir + "/" + SERVICE);
-    }
-
-    std::system(mkdir_command.c_str());
-    util::CopyFile(BIN, bin_path);
-    util::CopyFile(TIMER, timer_path);
-
-    // Ensure that binary is executable for owner
-    chmod(bin_path.c_str(), S_IRWXU);
-}
-
-void InitRecurringJob() {
-    std::string systemd_command;
-
-    if (util::IsSuperuser()) {
-        systemd_command = "systemctl enable --now " + TIMER;
-    } else {
-        systemd_command = "systemctl enable --now --user " + TIMER;
-    }
-
-    std::system(systemd_command.c_str());
-}
-
-}  // namespace install
 
 #endif  // __linux__
 
@@ -133,8 +83,6 @@ void InitRecurringJob() {
 
 bool IS_SUPERUSER;
 bool IS_SUPERUSER_IS_CACHED = false;
-
-namespace util {
 
 bool CopyFile(std::string source_file, std::string new_file) {
     return CopyFile(source_file.c_str(), new_file.c_str(), false);
@@ -161,7 +109,7 @@ bool IsSuperuser() {
     if (IS_SUPERUSER_IS_CACHED) {
         return IS_SUPERUSER;
     } else {
-        IS_SUPERUSER = (util::PopenSubprocess("net session")).size();
+        IS_SUPERUSER = (PopenSubprocess("net session")).size();
         IS_SUPERUSER_IS_CACHED = true;
 
         return IS_SUPERUSER;
@@ -170,7 +118,7 @@ bool IsSuperuser() {
 
 std::string GetInstallDir() {
     std::string install_dir;
-    if (util::IsSuperuser()) {
+    if (IsSuperuser()) {
         install_dir = ADMIN_INSTALL_DIR + "\\";
     } else {
         install_dir = std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
@@ -181,7 +129,7 @@ std::string GetInstallDir() {
 
 std::string GetOS() {
     std::string win_version =
-        util::PopenSubprocess("systeminfo | findstr /B /C:\"OS Name\"");
+        PopenSubprocess("systeminfo | findstr /B /C:\"OS Name\"");
     std::regex pattern("[\\n\\r\\s]*.*?(Windows\\s*\\S+).*[\\n\\r\\s]*");
     std::smatch match;
     std::regex_match(win_version, match, pattern);
@@ -198,31 +146,8 @@ std::string GetUser() {
     return user;
 }
 
-}  // namespace util
-
-namespace install {
-
-void InstallFiles() {
-    std::string install_dir = util::GetInstallDir();
-    std::system(("mkdir " + install_dir).c_str());
-    util::CopyFile(BIN, install_dir + BIN_NEW);
-}
-
-void InitRecurringJob() {
-    // Schedule task for Windows
-    std::string install_dir = util::GetInstallDir();
-    std::string task_command = "schtasks.exe /create /F /tn " + TASK_NAME +
-                               " /sc " + TASK_FREQ + " /mo " + TASK_FREQ_VALUE +
-                               " /tr " + install_dir + BIN_NEW;
-    if (util::IsSuperuser()) {
-        task_command += " /rl highest";
-    }
-
-    std::system(task_command.c_str());
-}
-
-}  // namespace install
-
 #endif  // WIN32
 
-#endif  // SYSTEM_HH
+}  // namespace util
+
+#endif  // UTIL_HH

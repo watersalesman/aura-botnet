@@ -5,7 +5,7 @@
 #include <string>
 
 #include "constants.hh"
-#include "system.hh"
+#include "util.hh"
 
 class Command {
    public:

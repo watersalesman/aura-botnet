@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "system.hh"
+#include "util.hh"
 
 SCENARIO("copying files around") {
     GIVEN("the current binary being run") {
