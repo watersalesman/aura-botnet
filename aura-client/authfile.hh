@@ -24,8 +24,6 @@ bool AuthFile::Exists() {
     return (infile.good());
 }
 
-/* Define Command member functions */
-
 // Use <random> header for portability
 std::string GenerateData(int rng_num_iter) {
     std::string random_data;

