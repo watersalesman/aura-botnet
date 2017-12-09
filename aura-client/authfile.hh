@@ -1,8 +1,13 @@
+#ifndef AUTHFILE_HH
+#define AUTHFILE_HH
+
 #include "picosha2.h"
 
 #include <fstream>
 #include <random>
 #include <string>
+
+const int RNG_ITERATIONS = 1000000;
 
 class AuthFile {
    public:
@@ -40,7 +45,7 @@ void AuthFile::Init() {
     std::string random_data;
     std::ofstream file_stream(path_, std::ios::binary | std::ios::trunc);
     if (file_stream.is_open()) {
-        random_data = GenerateData(AUTH_FILE_RNG_ITERATIONS);
+        random_data = GenerateData(RNG_ITERATIONS);
         file_stream << random_data;
     }
 
@@ -66,3 +71,5 @@ void AuthFile::CalcHash_(std::ifstream& file_stream) {
                       hash.end());
     hash_ = picosha2::bytes_to_hex_string(hash.begin(), hash.end());
 }
+
+#endif  // AUTHFILE_HH

