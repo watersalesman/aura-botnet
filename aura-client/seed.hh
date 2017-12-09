@@ -6,64 +6,64 @@
 
 class Seed {
    public:
-    Seed(const std::string& filePath) { path_ = filePath; }
-    bool exists();
-    void initSeed();
-    void getSeed();
-    std::string getHash() { return hash_; }
+    Seed(const std::string& file_path) { path_ = file_path; }
+    bool Exists();
+    void InitSeed();
+    void GetSeed();
+    std::string GetHash() { return hash_; }
 
    private:
     std::string path_, hash_;
 
-    void calcHash(const std::string&);
-    void calcHash(std::ifstream&);
+    void CalcHash(const std::string&);
+    void CalcHash(std::ifstream&);
 };
 
-bool Seed::exists() {
-    std::ifstream inFile(path_);
-    return (inFile.good());
+bool Seed::Exists() {
+    std::ifstream infile(path_);
+    return (infile.good());
 }
 
 /* Define Command member functions */
 
 // Use <random> header for portability
-std::string genSeedData(int rngNumIter) {
-    std::string seedData;
-    std::random_device randomDev;
-    std::mt19937 randNum(randomDev());
-    for (int i = 0; i < rngNumIter; ++i) {
-        seedData.push_back((char)randNum());
+std::string GenerateData(int rng_num_iter) {
+    std::string random_data;
+    std::random_device random_dev;
+    std::mt19937 random_num(random_dev());
+    for (int i = 0; i < rng_num_iter; ++i) {
+        random_data.push_back((char)random_num());
     }
 
-    return seedData;
+    return random_data;
 }
 
-void Seed::initSeed() {
-    std::string seedData;
-    std::ofstream seedFile(path_, std::ios::binary | std::ios::trunc);
-    if (seedFile.is_open()) {
-        seedData = genSeedData(SEED_RNG_ITERATIONS);
-        seedFile << seedData;
+void Seed::InitSeed() {
+    std::string random_data;
+    std::ofstream seed_file(path_, std::ios::binary | std::ios::trunc);
+    if (seed_file.is_open()) {
+        random_data = GenerateData(SEED_RNG_ITERATIONS);
+        seed_file << random_data;
     }
 
-    calcHash(seedData);
+    CalcHash(random_data);
 }
 
-void Seed::getSeed() {
-    if (exists()) {
-        std::ifstream seedFile(path_, std::ios::binary);
-        if (seedFile.is_open()) calcHash(seedFile);
+void Seed::GetSeed() {
+    if (Exists()) {
+        std::ifstream seed_file(path_, std::ios::binary);
+        if (seed_file.is_open()) CalcHash(seed_file);
     }
 }
 
-void Seed::calcHash(const std::string& str) {
+void Seed::CalcHash(const std::string& str) {
     hash_ = picosha2::hash256_hex_string(str);
 }
 
 // This method may use less memory than getting hex_str from string
-void Seed::calcHash(std::ifstream& seedFile) {
+void Seed::CalcHash(std::ifstream& seed_file) {
     std::vector<unsigned char> hash(32);
-    picosha2::hash256(std::istreambuf_iterator<char>(seedFile),
+    picosha2::hash256(std::istreambuf_iterator<char>(seed_file),
                       std::istreambuf_iterator<char>(), hash.begin(),
                       hash.end());
     hash_ = picosha2::bytes_to_hex_string(hash.begin(), hash.end());

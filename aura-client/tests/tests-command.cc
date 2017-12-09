@@ -5,25 +5,25 @@
 
 SCENARIO("using Command class") {
     GIVEN("a test JSON command") {
-        std::string testFile = "hello.txt";
+        std::string test_file = "hello.txt";
         std::string command = "touch ";
 #ifdef WIN32
         command = "type nul > ";
 #endif
         std::string response = "{\"shell\": \"default\", \"command_text\": \"" +
-                               command + testFile + "\"}";
+                               command + test_file + "\"}";
         rapidjson::Document json;
         json.Parse(response.c_str());
         Command cmd(response);
 
         THEN("construct construct successfully") {
-            REQUIRE(cmd.commandText == command + testFile);
+            REQUIRE(cmd.command_text == command + test_file);
             REQUIRE(json.IsObject());
         }
 
         THEN("execute command") {
-            REQUIRE(util::popenSubprocess(cmd.execute()) == "");
-            REQUIRE(std::remove(testFile.c_str()) == 0);
+            REQUIRE(util::PopenSubprocess(cmd.Execute()) == "");
+            REQUIRE(std::remove(test_file.c_str()) == 0);
         }
     }
 
@@ -31,39 +31,40 @@ SCENARIO("using Command class") {
         std::string response = "<>?><<<<<><NOTVALID";
         Command cmd(response);
 
-        THEN("set empty commandText") { REQUIRE(cmd.commandText == ""); }
+        THEN("set empty command_text") { REQUIRE(cmd.command_text == ""); }
 
         THEN("set default shell") { REQUIRE(cmd.shell == "default"); }
 
-        THEN("execute() returns empty string") { REQUIRE(cmd.execute() == ""); }
+        THEN("Execute() returns empty string") { REQUIRE(cmd.Execute() == ""); }
     }
 
 #ifdef WIN32
     GIVEN("a command object set to run in PowerShell") {
-        std::string testFile = "hello.txt";
-        std::string command = "echo hello > " + testFile;
+        std::string test_file = "hello.txt";
+        std::string command = "echo hello > " + test_file;
         std::string response =
             "{\"shell\": \"powershell\", \"command_text\": \"" + command +
             "\"}";
         Command cmd(response);
 
-        THEN("execute() runs properly") {
-            cmd.execute();
-            REQUIRE(std::remove(testFile.c_str()) == 0);
+        THEN("Execute() runs properly") {
+            cmd.Execute();
+            REQUIRE(std::remove(test_file.c_str()) == 0);
         }
     }
 #endif
+
 #ifdef __linux__
     GIVEN("a command object set to run in Bash") {
-        std::string testFile = "hello.txt";
-        std::string command = "echo hello > " + testFile;
+        std::string test_file = "hello.txt";
+        std::string command = "echo hello > " + test_file;
         std::string response =
             "{\"shell\": \"bash\", \"command_text\": \"" + command + "\"}";
         Command cmd(response);
 
-        THEN("execute() runs properly") {
-            cmd.execute();
-            REQUIRE(std::remove(testFile.c_str()) == 0);
+        THEN("Execute() runs properly") {
+            cmd.Execute();
+            REQUIRE(std::remove(test_file.c_str()) == 0);
         }
     }
 #endif

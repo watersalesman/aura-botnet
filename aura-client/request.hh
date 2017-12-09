@@ -9,26 +9,26 @@ namespace request {
 
 class PostForm {
    public:
-    void addField(const std::string& field, const std::string& value);
-    std::string toString();
+    void AddField(const std::string& field, const std::string& value);
+    std::string ToString();
 
    private:
     std::vector<std::tuple<std::string, std::string>> data_;
 };
 
-void PostForm::addField(const std::string& field, const std::string& value) {
+void PostForm::AddField(const std::string& field, const std::string& value) {
     data_.push_back(std::make_tuple(field, value));
 }
 
-std::string PostForm::toString() {
-    std::string formString, field, value;
+std::string PostForm::ToString() {
+    std::string form_string, field, value;
     for (int i = 0; i < data_.size(); ++i) {
-        if (i) formString += "&";
+        if (i) form_string += "&";
         std::tie(field, value) = data_[i];
-        formString += field + "=" + value;
+        form_string += field + "=" + value;
     }
 
-    return formString;
+    return form_string;
 }
 
 }  // namespace request
@@ -40,17 +40,17 @@ std::string PostForm::toString() {
 
 // Write function for returning curl response as a string
 size_t WriteCallback(void* contents, size_t size, size_t nmemb,
-                     void* outString) {
-    ((std::string*)outString)->append((char*)contents);
+                     void* out_string) {
+    ((std::string*)out_string)->append((char*)contents);
 
     return nmemb * size;
 }
 
-std::string requestHandler(const std::string& url,
-                           const std::string& postForm = "") {
+std::string RequestHandler(const std::string& url,
+                           const std::string& post_form = "") {
     std::string response;
     CURL* curl;
-    CURLcode resCode;
+    CURLcode response_code;
 
     curl_global_init(CURL_GLOBAL_ALL);
     curl = curl_easy_init();
@@ -59,15 +59,15 @@ std::string requestHandler(const std::string& url,
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
         // If POST form data is passed, include them in the request body
-        if (postForm != "") {
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postForm.c_str());
+        if (post_form != "") {
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_form.c_str());
         }
 
         // Set write function and string to write to
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
-        resCode = curl_easy_perform(curl);
+        response_code = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         curl_global_cleanup();
     }
@@ -78,11 +78,11 @@ std::string requestHandler(const std::string& url,
 namespace request {
 
 // GET request
-std::string get(const std::string& url) { return requestHandler(url); }
+std::string Get(const std::string& url) { return RequestHandler(url); }
 
 // POST request
-std::string post(const std::string& url, const std::string& postForm) {
-    return requestHandler(url, postForm);
+std::string Post(const std::string& url, const std::string& post_form) {
+    return RequestHandler(url, post_form);
 }
 
 }  // namespace request
@@ -100,20 +100,20 @@ class WinINet {
    public:
     WinINet(const char* host, int port);
     ~WinINet();
-    std::string getHost() { return host_; }
-    int getPort() { return port_; }
-    void request(const std::string& method, INTERNET_SCHEME scheme,
+    std::string GetHost() { return host_; }
+    int GetPort() { return port_; }
+    void Request(const std::string& method, INTERNET_SCHEME scheme,
                  const std::string& uri, const std::string& data);
-    std::string getResponse() { return responseStr_; }
+    std::string GetResponse() { return response_; }
 
    private:
     std::string host_;
     int port_;
-    char userAgent_[512];
-    DWORD usSize_;
+    char user_agent_[512];
+    DWORD ua_size_;
     char buffer_[4000];
-    DWORD bytesRead_;
-    std::string responseStr_;
+    DWORD bytes_read_;
+    std::string response_;
     HINTERNET internet_, connection_, request_;
 };
 
@@ -121,11 +121,11 @@ WinINet::WinINet(const char* host, int port = INTERNET_DEFAULT_HTTP_PORT) {
     host_ = host;
     port_ = port;
 
-    usSize_ = sizeof(userAgent_);
-    ObtainUserAgentString(0, userAgent_, &usSize_);
+    ua_size_ = sizeof(user_agent_);
+    ObtainUserAgentString(0, user_agent_, &ua_size_);
 
     internet_ =
-        InternetOpenA(userAgent_, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+        InternetOpenA(user_agent_, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 
     connection_ = InternetConnectA(internet_, host, port, NULL, NULL,
                                    INTERNET_SERVICE_HTTP, 0, 0);
@@ -137,88 +137,88 @@ WinINet::~WinINet() {
     InternetCloseHandle(internet_);
 }
 
-void WinINet::request(const std::string& method, INTERNET_SCHEME scheme,
+void WinINet::Request(const std::string& method, INTERNET_SCHEME scheme,
                       const std::string& uri, const std::string& data) {
-    responseStr_ = "";
-    std::string httpMethod = method;
+    response_ = "";
+    std::string http_method = method;
 
-    if (httpMethod != "POST") {
-        httpMethod = "GET";
+    if (http_method != "POST") {
+        http_method = "GET";
     }
 
     // Determine if using SSL
-    DWORD requestFlags = (INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE);
+    DWORD request_flags = (INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE);
     if (scheme == INTERNET_SCHEME_HTTPS) {
-        requestFlags = (requestFlags | INTERNET_FLAG_SECURE);
+        request_flags = (request_flags | INTERNET_FLAG_SECURE);
     }
 
     // Create request
-    request_ = HttpOpenRequestA(connection_, httpMethod.c_str(), uri.c_str(),
-                                "HTTP/1.1", NULL, NULL, requestFlags, NULL);
+    request_ = HttpOpenRequestA(connection_, http_method.c_str(), uri.c_str(),
+                                "HTTP/1.1", NULL, NULL, request_flags, NULL);
 
     if (request_) {
         // Prepare header and optional post form
         std::string header;
-        if (httpMethod == "POST") {
+        if (http_method == "POST") {
             header = "Content-Type: application/x-www-form-urlencoded";
         }
-        int headerlen = header.size();
+        int header_len = header.size();
         char* form = new char[data.length() + 1];
         strcpy(form, data.c_str());
-        int formlen = strlen(form);
+        int form_len = strlen(form);
 
         // Send request
-        BOOL requestSuccess = HttpSendRequestA(request_, header.c_str(),
-                                               headerlen, form, formlen);
+        BOOL request_success = HttpSendRequestA(request_, header.c_str(),
+                                                header_len, form, form_len);
 
         // Read request response
-        if (requestSuccess) {
+        if (request_success) {
             while (InternetReadFile(request_, &buffer_, strlen(buffer_),
-                                    &bytesRead_) &&
-                   bytesRead_ > 0) {
-                responseStr_.append(buffer_, bytesRead_);
+                                    &bytes_read_) &&
+                   bytes_read_ > 0) {
+                response_.append(buffer_, bytes_read_);
             }
         }
         delete[] form;
     }
 }
 
-static std::string requestHandler(const std::string& httpMethod,
+static std::string RequestHandler(const std::string& http_method,
                                   const std::string& url,
                                   const std::string& data = "") {
     // Use InternetCrackUrlA() to parse URL
-    URL_COMPONENTS urlParts;
-    char scheme[20], host[128], user[256], pass[256], uri[512], extraInfo[512];
-    urlParts.lpszScheme = scheme;
-    urlParts.dwSchemeLength = sizeof(scheme);
-    urlParts.lpszHostName = host;
-    urlParts.dwHostNameLength = sizeof(host);
-    urlParts.lpszUserName = user;
-    urlParts.dwUserNameLength = sizeof(user);
-    urlParts.lpszPassword = pass;
-    urlParts.dwPasswordLength = sizeof(pass);
-    urlParts.lpszUrlPath = uri;
-    urlParts.dwUrlPathLength = sizeof(uri);
-    urlParts.lpszExtraInfo = extraInfo;
-    urlParts.dwExtraInfoLength = sizeof(extraInfo);
-    urlParts.dwStructSize = sizeof(urlParts);
+    URL_COMPONENTS url_parts;
+    char scheme[20], host[128], user[256], pass[256], uri[512], extra_info[512];
+    url_parts.lpszScheme = scheme;
+    url_parts.dwSchemeLength = sizeof(scheme);
+    url_parts.lpszHostName = host;
+    url_parts.dwHostNameLength = sizeof(host);
+    url_parts.lpszUserName = user;
+    url_parts.dwUserNameLength = sizeof(user);
+    url_parts.lpszPassword = pass;
+    url_parts.dwPasswordLength = sizeof(pass);
+    url_parts.lpszUrlPath = uri;
+    url_parts.dwUrlPathLength = sizeof(uri);
+    url_parts.lpszExtraInfo = extra_info;
+    url_parts.dwExtraInfoLength = sizeof(extra_info);
+    url_parts.dwStructSize = sizeof(url_parts);
     BOOL crackSuccess =
-        InternetCrackUrlA(url.c_str(), url.length(), 0, &urlParts);
+        InternetCrackUrlA(url.c_str(), url.length(), 0, &url_parts);
 
     // Pass retrieved URL components
-    WinINet http(urlParts.lpszHostName, urlParts.nPort);
-    http.request(httpMethod, urlParts.nScheme, urlParts.lpszUrlPath, data);
-    return http.getResponse();
+    WinINet http(url_parts.lpszHostName, url_parts.nPort);
+    http.Request(http_method, url_parts.nScheme, url_parts.lpszUrlPath, data);
+    return http.GetResponse();
 }
 
 namespace request {
 
 // GET request
-std::string get(std::string url) { return requestHandler("GET", url); }
+std::string Get(std::string url) { return RequestHandler("GET", url); }
 
 // POST request
-std::string post(std::string url, std::string data) {
-    return requestHandler("POST", url, data);
+std::string Post(std::string url, std::string data) {
+    return RequestHandler("POST", url, data);
 }
 
 }  // namespace request

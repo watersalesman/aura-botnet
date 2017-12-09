@@ -17,26 +17,26 @@
 
 namespace util {
 
-bool copyFile(std::string src, std::string dst) {
-    std::ifstream srcFile(src, std::ios::binary);
-    std::ofstream dstFile(dst, std::ios::binary | std::ios::trunc);
-    if (srcFile.is_open() && dstFile.is_open()) {
-        dstFile << srcFile.rdbuf();
+bool CopyFile(std::string source_path, std::string new_path) {
+    std::ifstream source_file(source_path, std::ios::binary);
+    std::ofstream new_file(new_path, std::ios::binary | std::ios::trunc);
+    if (source_file.is_open() && new_file.is_open()) {
+        new_file << source_file.rdbuf();
         return true;
     } else
         return false;
 }
 
-int linkFile(std::string src, std::string dst) {
-    return link(src.c_str(), dst.c_str());
+int LinkFile(std::string source_file, std::string new_file) {
+    return link(source_file.c_str(), new_file.c_str());
 }
 
-std::string popenSubprocess(const std::string& cmd) {
+std::string PopenSubprocess(const std::string& command) {
     FILE* pipe;
     char buf[512];
     std::string output;
 
-    if (!(pipe = popen(cmd.c_str(), "r"))) {
+    if (!(pipe = popen(command.c_str(), "r"))) {
         std::exit(1);
     }
 
@@ -48,25 +48,25 @@ std::string popenSubprocess(const std::string& cmd) {
     return output;
 }
 
-bool isSuperuser() { return (popenSubprocess("id -u | tr -d '\n'") == "0"); }
+bool IsSuperuser() { return (PopenSubprocess("id -u | tr -d '\n'") == "0"); }
 
-std::string getInstallDir() {
-    std::string installDir;
-    if (isSuperuser()) {
-        installDir = ROOT_HOME + "/" + INSTALL_DIR + "/";
+std::string GetInstallDir() {
+    std::string install_dir;
+    if (IsSuperuser()) {
+        install_dir = ROOT_HOME + "/" + INSTALL_DIR + "/";
     } else {
-        installDir = std::getenv("HOME") + ("/" + INSTALL_DIR + "/");
+        install_dir = std::getenv("HOME") + ("/" + INSTALL_DIR + "/");
     }
 
-    return installDir;
+    return install_dir;
 }
 
-std::string getOS() { return util::popenSubprocess("uname | tr -d '\n'"); }
+std::string GetOS() { return util::PopenSubprocess("uname | tr -d '\n'"); }
 
-std::string getUser() {
+std::string GetUser() {
     std::string user;
 
-    if (util::isSuperuser()) {
+    if (util::IsSuperuser()) {
         user = "root";
     } else {
         user = std::getenv("USER");
@@ -79,47 +79,47 @@ std::string getUser() {
 
 namespace install {
 
-void installFiles() {
-    std::string mkdirCmd, installDir, timerPath, binPath;
+void InstallFiles() {
+    std::string mkdir_command, install_dir, timer_path, bin_path;
 
-    installDir = util::getInstallDir();
-    binPath = installDir + BIN_NEW;
-    mkdirCmd = "mkdir -p " + util::getInstallDir() + " ";
+    install_dir = util::GetInstallDir();
+    bin_path = install_dir + BIN_NEW;
+    mkdir_command = "mkdir -p " + util::GetInstallDir() + " ";
 
-    if (util::isSuperuser()) {
-        mkdirCmd += SYS_SERVICE_DEST;
-        timerPath = SYS_SERVICE_DEST + "/" + TIMER;
+    if (util::IsSuperuser()) {
+        mkdir_command += SYS_SERVICE_DEST;
+        timer_path = SYS_SERVICE_DEST + "/" + TIMER;
 
         // Change service name back to normal after moving if root
-        util::copyFile(SYS_SERVICE, SYS_SERVICE_DEST + "/" + SERVICE);
+        util::CopyFile(SYS_SERVICE, SYS_SERVICE_DEST + "/" + SERVICE);
     } else {
-        std::string homeDir = std::getenv("HOME");
-        std::string userServiceDir = homeDir + "/" + SERVICE_DEST;
+        std::string home_dir = std::getenv("HOME");
+        std::string user_service_dir = home_dir + "/" + SERVICE_DEST;
 
-        mkdirCmd += userServiceDir;
-        timerPath = userServiceDir + "/" + TIMER;
+        mkdir_command += user_service_dir;
+        timer_path = user_service_dir + "/" + TIMER;
 
-        util::copyFile(SERVICE, userServiceDir + "/" + SERVICE);
+        util::CopyFile(SERVICE, user_service_dir + "/" + SERVICE);
     }
 
-    std::system(mkdirCmd.c_str());
-    util::copyFile(BIN, binPath);
-    util::copyFile(TIMER, timerPath);
+    std::system(mkdir_command.c_str());
+    util::CopyFile(BIN, bin_path);
+    util::CopyFile(TIMER, timer_path);
 
     // Ensure that binary is executable for owner
-    chmod(binPath.c_str(), S_IRWXU);
+    chmod(bin_path.c_str(), S_IRWXU);
 }
 
-void initRecurringJob() {
-    std::string systemdCmd;
+void InitRecurringJob() {
+    std::string systemd_command;
 
-    if (util::isSuperuser()) {
-        systemdCmd = "systemctl enable --now " + TIMER;
+    if (util::IsSuperuser()) {
+        systemd_command = "systemctl enable --now " + TIMER;
     } else {
-        systemdCmd = "systemctl enable --now --user " + TIMER;
+        systemd_command = "systemctl enable --now --user " + TIMER;
     }
 
-    std::system(systemdCmd.c_str());
+    std::system(systemd_command.c_str());
 }
 
 }  // namespace install
@@ -136,16 +136,16 @@ bool IS_SUPERUSER_IS_CACHED = false;
 
 namespace util {
 
-bool copyFile(std::string src, std::string dst) {
-    return CopyFile(src.c_str(), dst.c_str(), false);
+bool CopyFile(std::string source_file, std::string new_file) {
+    return CopyFile(source_file.c_str(), new_file.c_str(), false);
 }
 
-std::string popenSubprocess(const std::string& cmd) {
+std::string PopenSubprocess(const std::string& command) {
     FILE* pipe;
     char buf[512];
     std::string output;
 
-    if (!(pipe = _popen(cmd.c_str(), "r"))) {
+    if (!(pipe = _popen(command.c_str(), "r"))) {
         std::exit(1);
     }
 
@@ -157,41 +157,41 @@ std::string popenSubprocess(const std::string& cmd) {
     return output;
 }
 
-bool isSuperuser() {
+bool IsSuperuser() {
     if (IS_SUPERUSER_IS_CACHED) {
         return IS_SUPERUSER;
     } else {
-        IS_SUPERUSER = (util::popenSubprocess("net session")).size();
+        IS_SUPERUSER = (util::PopenSubprocess("net session")).size();
         IS_SUPERUSER_IS_CACHED = true;
 
         return IS_SUPERUSER;
     }
 }
 
-std::string getInstallDir() {
-    std::string installDir;
-    if (util::isSuperuser()) {
-        installDir = ADMIN_INSTALL_DIR + "\\";
+std::string GetInstallDir() {
+    std::string install_dir;
+    if (util::IsSuperuser()) {
+        install_dir = ADMIN_INSTALL_DIR + "\\";
     } else {
-        installDir = std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
+        install_dir = std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
     }
 
-    return installDir;
+    return install_dir;
 }
 
-std::string getOS() {
-    std::string winVersion =
-        util::popenSubprocess("systeminfo | findstr /B /C:\"OS Name\"");
+std::string GetOS() {
+    std::string win_version =
+        util::PopenSubprocess("systeminfo | findstr /B /C:\"OS Name\"");
     std::regex pattern("[\\n\\r\\s]*.*?(Windows\\s*\\S+).*[\\n\\r\\s]*");
     std::smatch match;
-    std::regex_match(winVersion, match, pattern);
+    std::regex_match(win_version, match, pattern);
 
     return match[1];
 }
 
-std::string getUser() {
+std::string GetUser() {
     std::string user = std::getenv("USERNAME");
-    if (isSuperuser()) {
+    if (IsSuperuser()) {
         user += " (admin)";
     }
 
@@ -202,23 +202,23 @@ std::string getUser() {
 
 namespace install {
 
-void installFiles() {
-    std::string installDir = util::getInstallDir();
-    std::system(("mkdir " + installDir).c_str());
-    util::copyFile(BIN, installDir + BIN_NEW);
+void InstallFiles() {
+    std::string install_dir = util::GetInstallDir();
+    std::system(("mkdir " + install_dir).c_str());
+    util::CopyFile(BIN, install_dir + BIN_NEW);
 }
 
-void initRecurringJob() {
+void InitRecurringJob() {
     // Schedule task for Windows
-    std::string installDir = util::getInstallDir();
-    std::string taskCommand = "schtasks.exe /create /F /tn " + TASK_NAME +
-                              " /sc " + TASK_FREQ + " /mo " + TASK_FREQ_VALUE +
-                              " /tr " + installDir + BIN_NEW;
-    if (util::isSuperuser()) {
-        taskCommand += " /rl highest";
+    std::string install_dir = util::GetInstallDir();
+    std::string task_command = "schtasks.exe /create /F /tn " + TASK_NAME +
+                               " /sc " + TASK_FREQ + " /mo " + TASK_FREQ_VALUE +
+                               " /tr " + install_dir + BIN_NEW;
+    if (util::IsSuperuser()) {
+        task_command += " /rl highest";
     }
 
-    std::system(taskCommand.c_str());
+    std::system(task_command.c_str());
 }
 
 }  // namespace install
