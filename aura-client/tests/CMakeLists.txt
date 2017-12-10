@@ -22,14 +22,23 @@ add_library(${TEST_MAIN} SHARED ${TEST_MAIN}.cc)
 # Set all test source files, compile, and link to main test file
 # Then link libraries for OS
 # Finally, add test to CMake project
+add_executable(tests-bot tests-bot.cc
+    "${PROJECT_SOURCE_DIR}/bot.cc"
+    "${PROJECT_SOURCE_DIR}/request.cc"
+    "${PROJECT_SOURCE_DIR}/util.cc"
+    "${PROJECT_SOURCE_DIR}/sysinfo.cc"
+    "${PROJECT_SOURCE_DIR}/authfile.cc"
+    "${PROJECT_SOURCE_DIR}/installer.cc")
+add_executable(tests-request tests-request.cc "${PROJECT_SOURCE_DIR}/request.cc")
+add_executable(tests-util tests-util.cc "${PROJECT_SOURCE_DIR}/util.cc")
+
 set(TESTS
+    tests-bot
     tests-request
-    tests-system
-    tests-command
+    tests-util
 )
 
 foreach(TEST_SRC_FILE ${TESTS})
-    add_executable(${TEST_SRC_FILE} ${TEST_SRC_FILE}.cc)
     target_link_libraries(${TEST_SRC_FILE} ${TEST_MAIN})
 
     if(UNIX AND NOT APPLE)

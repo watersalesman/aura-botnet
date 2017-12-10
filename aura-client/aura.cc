@@ -3,6 +3,7 @@
 #include <string>
 
 #include "bot.hh"
+#include "util.hh"
 
 int main() {
     std::string register_url, command_url, install_dir;

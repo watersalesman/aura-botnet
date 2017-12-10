@@ -20,7 +20,15 @@ set(WIN32_LIBS urlmon wininet)
 
 if(UNIX AND NOT APPLE)
     add_definitions(-DCURL_STATICLIB)
-    add_executable(${BIN} aura.cc)
+    add_executable(${BIN} 
+        aura.cc
+        request.cc
+        util.cc
+        bot.cc
+        installer.cc
+        authfile.cc
+        sysinfo.cc
+    )
     target_link_libraries(${BIN} ${LINUX_LIBS})
 endif()
 

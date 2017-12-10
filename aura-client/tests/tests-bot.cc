@@ -1,7 +1,7 @@
 #include <iostream>
 
+#include "bot.hh"
 #include "catch.hpp"
-#include "command.hh"
 
 SCENARIO("using Command class") {
     GIVEN("a test JSON command") {
