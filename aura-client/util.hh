@@ -60,26 +60,11 @@ std::string GetInstallDir() {
     return install_dir;
 }
 
-std::string GetOS() { return PopenSubprocess("uname | tr -d '\n'"); }
-
-std::string GetUser() {
-    std::string user;
-
-    if (IsSuperuser()) {
-        user = "root";
-    } else {
-        user = std::getenv("USER");
-    }
-
-    return user;
-}
-
 #endif  // __linux__
 
 #ifdef WIN32
 
 #include <windows.h>
-#include <regex>
 
 bool IS_SUPERUSER;
 bool IS_SUPERUSER_IS_CACHED = false;
@@ -125,25 +110,6 @@ std::string GetInstallDir() {
     }
 
     return install_dir;
-}
-
-std::string GetOS() {
-    std::string win_version =
-        PopenSubprocess("systeminfo | findstr /B /C:\"OS Name\"");
-    std::regex pattern("[\\n\\r\\s]*.*?(Windows\\s*\\S+).*[\\n\\r\\s]*");
-    std::smatch match;
-    std::regex_match(win_version, match, pattern);
-
-    return match[1];
-}
-
-std::string GetUser() {
-    std::string user = std::getenv("USERNAME");
-    if (IsSuperuser()) {
-        user += " (admin)";
-    }
-
-    return user;
 }
 
 #endif  // WIN32

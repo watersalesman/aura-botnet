@@ -34,7 +34,7 @@ Installer::Installer(std::string path) {
 
 void Installer::InitAuthFile_() {
     auth_ = std::make_unique<AuthFile>(install_dir_ + AUTH_FILE);
-    is_new_ = auth_->Exists();
+    is_new_ = not auth_->Exists();
     if (IsNew())
         auth_->Init();
     else

