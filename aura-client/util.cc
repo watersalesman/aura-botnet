@@ -68,8 +68,9 @@ std::string GetInstallDir() {
 bool IS_SUPERUSER;
 bool IS_SUPERUSER_IS_CACHED = false;
 
+// Use CopyFileA from windows.h
 bool CopyFile(std::string source_file, std::string new_file) {
-    return CopyFile(source_file.c_str(), new_file.c_str(), false);
+    return CopyFileA(source_file.c_str(), new_file.c_str(), false);
 }
 
 std::string PopenSubprocess(const std::string& command) {

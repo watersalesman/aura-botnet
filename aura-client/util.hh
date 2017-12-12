@@ -12,6 +12,8 @@
 
 namespace util {
 
+// Undefine CopyFile macro from windows.h
+#undef CopyFile
 bool CopyFile(std::string source_path, std::string new_path);
 
 bool IsSuperuser();
@@ -20,9 +22,10 @@ bool IsSuperuser();
  * values in constants.hh */
 std::string GetInstallDir();
 
+// Run system command and return output as string
 std::string PopenSubprocess(const std::string& command);
 
-// Linux-specific components
+/* Linux-specific components */
 #ifdef __linux__
 
 #include <unistd.h>
@@ -31,7 +34,7 @@ int LinkFile(std::string source_file, std::string new_file);
 
 #endif  // __linux__
 
-// Windows-specific components
+/* Windows-specific components */
 #ifdef WIN32
 
 #include <windows.h>
