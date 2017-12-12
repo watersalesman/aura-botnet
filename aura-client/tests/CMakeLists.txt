@@ -17,7 +17,16 @@ include_directories(
 
 # Set Catch2 main file as library
 set(TEST_MAIN tests-main)
-add_library(${TEST_MAIN} SHARED ${TEST_MAIN}.cc)
+
+if(UNIX AND NOT APPLE)
+    set(CATCH2_MAIN_LIB_TYPE SHARED)
+endif()
+
+if(WIN32)
+    set(CATCH2_MAIN_LIB_TYPE STATIC)
+endif()
+
+add_library(${TEST_MAIN} ${CATCH2_MAIN_LIB_TYPE} ${TEST_MAIN}.cc)
 
 # Set all test source files, compile, and link to main test file
 # Then link libraries for OS
