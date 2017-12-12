@@ -3,7 +3,24 @@
 #include "bot.hh"
 #include "catch.hpp"
 
-SCENARIO("using Command class") {
+SCENARIO("using the Bot class") {
+    GIVEN("a brand new Bot instance") {
+        Bot test_bot("");
+
+        THEN("The Bot should be seen as new") { REQUIRE(test_bot.IsNew()); }
+
+        THEN("Another Bot class should be seen as not new") {
+            Bot not_new_bot("");
+            REQUIRE(not not_new_bot.IsNew());
+        }
+
+        THEN("Auth file is created in current directory") {
+            REQUIRE(std::remove(AUTH_FILE.c_str()) == 0);
+        }
+    }
+}
+
+SCENARIO("using the Command class") {
     GIVEN("a test JSON command") {
         std::string test_file = "hello.txt";
         std::string command = "touch ";
