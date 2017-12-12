@@ -18,23 +18,24 @@ include_directories(${PICOSHA2_INCLUDE} ${RAPIDJSON_INCLUDE})
 set(LINUX_LIBS curl)
 set(WIN32_LIBS urlmon wininet)
 
+# Set executable
+add_executable(${BIN}
+    aura.cc
+    request.cc
+    util.cc
+    bot.cc
+    installer.cc
+    authfile.cc
+    sysinfo.cc
+)
+
 if(UNIX AND NOT APPLE)
     add_definitions(-DCURL_STATICLIB)
-    add_executable(${BIN} 
-        aura.cc
-        request.cc
-        util.cc
-        bot.cc
-        installer.cc
-        authfile.cc
-        sysinfo.cc
-    )
     target_link_libraries(${BIN} ${LINUX_LIBS})
 endif()
 
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    add_executable(${BIN} aura.cc)
     target_link_libraries(${BIN} ${WIN32_LIBS})
 endif()
 
