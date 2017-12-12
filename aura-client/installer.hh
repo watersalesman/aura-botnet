@@ -1,6 +1,7 @@
 #ifndef INSTALLER_HH
 #define INSTALLER_HH
 
+#include <iso646.h>
 #include <memory>
 #include <string>
 

@@ -1,5 +1,6 @@
 #include "installer.hh"
 
+#include <iso646.h>
 #include <memory>
 #include <string>
 
