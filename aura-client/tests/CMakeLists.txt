@@ -31,6 +31,7 @@ add_library(${TEST_MAIN} ${CATCH2_MAIN_LIB_TYPE} ${TEST_MAIN}.cc)
 # Set all test source files, compile, and link to main test file
 # Then link libraries for OS
 # Finally, add test to CMake project
+add_executable(tests-authfile tests-authfile.cc "${PROJECT_SOURCE_DIR}/authfile.cc")
 add_executable(tests-bot tests-bot.cc
     "${PROJECT_SOURCE_DIR}/bot.cc"
     "${PROJECT_SOURCE_DIR}/request.cc"
@@ -46,6 +47,7 @@ add_executable(tests-request tests-request.cc "${PROJECT_SOURCE_DIR}/request.cc"
 add_executable(tests-util tests-util.cc "${PROJECT_SOURCE_DIR}/util.cc")
 
 set(TESTS
+    tests-authfile
     tests-bot
     tests-installer
     tests-request
