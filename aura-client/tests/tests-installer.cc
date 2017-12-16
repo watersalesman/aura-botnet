@@ -21,7 +21,7 @@ SCENARIO("Working with Installer class") {
             Installer not_new_install("");
 
             THEN("it should be not be seen as new") {
-                REQUIRE(not not_new_install.IsNew());
+                REQUIRE_FALSE(not_new_install.IsNew());
             }
         }
 

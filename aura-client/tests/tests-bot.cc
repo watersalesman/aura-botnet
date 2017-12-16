@@ -13,7 +13,7 @@ SCENARIO("using the Bot class") {
 
         THEN("Another Bot class should not be seen as new") {
             Bot not_new_bot("");
-            REQUIRE(not not_new_bot.IsNew());
+            REQUIRE_FALSE(not_new_bot.IsNew());
         }
 
         THEN("Auth file is created in install directory") {
