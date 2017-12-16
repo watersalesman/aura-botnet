@@ -84,6 +84,7 @@ std::string Post(const std::string& url, const std::string& post_form) {
 #include <stdio.h>
 #include <windows.h>
 #include <wininet.h>
+#include <memory>
 
 WinINet::WinINet(const char* host, int port = INTERNET_DEFAULT_HTTP_PORT) {
     host_ = host;
@@ -131,9 +132,11 @@ void WinINet::Request(const std::string& method, INTERNET_SCHEME scheme,
             header = "Content-Type: application/x-www-form-urlencoded";
         }
         int header_len = header.size();
-        char* form = new char[data.length() + 1];
-        strcpy(form, data.c_str());
-        int form_len = strlen(form);
+
+        // Use unique_ptr for RAII cleanup of char*
+        std::unique_ptr<char[]> form(new char[data.length() + 1]);
+        strcpy(form.get(), data.c_str());
+        int form_len = strlen(form.get());
 
         // Send request
         BOOL request_success = HttpSendRequestA(request_, header.c_str(),
@@ -147,7 +150,6 @@ void WinINet::Request(const std::string& method, INTERNET_SCHEME scheme,
                 response_.append(buffer_, bytes_read_);
             }
         }
-        delete[] form;
     }
 }
 
