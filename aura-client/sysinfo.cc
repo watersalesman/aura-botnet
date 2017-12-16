@@ -20,15 +20,19 @@ void VersionInfo::Collect() { data_ = AURA_VERSION; }
 
 void HashTypeInfo::Collect() { data_ = HASH_TYPE; }
 
-void OSInfo::Collect() {
 #ifdef __linux__
 
-    data_ = util::PopenSubprocess("uname | tr -d '\n'");
+void OSInfo::Collect() { data_ = util::PopenSubprocess("uname | tr -d '\n'"); }
+
+void UserInfo::Collect() {
+    data_ = util::IsSuperuser() ? "root" : std::getenv("USER");
+}
 
 #endif
 
 #ifdef WIN32
 
+void OSInfo::Collect() {
     std::string win_version =
         util::PopenSubprocess("systeminfo | findstr /B /C:\"OS Name\"");
     std::regex pattern("[\\n\\r\\s]*.*?(Windows\\s*\\S+).*[\\n\\r\\s]*");
@@ -36,25 +40,15 @@ void OSInfo::Collect() {
     std::regex_match(win_version, match, pattern);
 
     data_ = match[1];
-
-#endif
 }
 
 void UserInfo::Collect() {
-#ifdef __linux__
-
-    data_ = util::IsSuperuser() ? "root" : std::getenv("USER");
-
-#endif
-
-#ifdef WIN32
-
     data_ = util::IsSuperuser()
                 ? ADMIN_INSTALL_DIR + "\\"
                 : std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
+}
 
 #endif
-}
 
 DataList::DataList(std::string auth_hash) {
     auth_hash_ = auth_hash;
