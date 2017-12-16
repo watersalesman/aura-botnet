@@ -1,21 +1,29 @@
-#include <iostream>
-
 #include "bot.hh"
 #include "catch.hpp"
+#include "constants.hh"
+#include "helper.hh"
 
 SCENARIO("using the Bot class") {
     GIVEN("a brand new Bot instance") {
+        std::remove(AUTH_FILE.c_str());
+        std::remove(BIN_NEW.c_str());
         Bot test_bot("");
 
         THEN("The Bot should be seen as new") { REQUIRE(test_bot.IsNew()); }
 
-        THEN("Another Bot class should be seen as not new") {
+        THEN("Another Bot class should not be seen as new") {
             Bot not_new_bot("");
             REQUIRE(not not_new_bot.IsNew());
         }
 
-        THEN("Auth file is created in current directory") {
-            REQUIRE(std::remove(AUTH_FILE.c_str()) == 0);
+        THEN("Auth file is created in install directory") {
+            REQUIRE(FileExists(AUTH_FILE));
+        }
+
+        THEN("Install client to install directory") {
+            test_bot.Install();
+            REQUIRE(CreateTestFile(BIN));
+            REQUIRE(FileExists(BIN_NEW));
         }
     }
 }
@@ -58,6 +66,7 @@ SCENARIO("using the Command class") {
 #ifdef WIN32
     GIVEN("a command object set to run in PowerShell") {
         std::string test_file = "hello.txt";
+        std::remove(test_file.c_str());
         std::string command = "echo hello > " + test_file;
         std::string response =
             "{\"shell\": \"powershell\", \"command_text\": \"" + command +
@@ -66,7 +75,7 @@ SCENARIO("using the Command class") {
 
         THEN("Execute() runs properly") {
             cmd.Execute();
-            REQUIRE(std::remove(test_file.c_str()) == 0);
+            REQUIRE(FileExists(test_file));
         }
     }
 #endif
@@ -74,6 +83,7 @@ SCENARIO("using the Command class") {
 #ifdef __linux__
     GIVEN("a command object set to run in Bash") {
         std::string test_file = "hello.txt";
+        std::remove(test_file.c_str());
         std::string command = "echo hello > " + test_file;
         std::string response =
             "{\"shell\": \"bash\", \"command_text\": \"" + command + "\"}";
@@ -81,7 +91,7 @@ SCENARIO("using the Command class") {
 
         THEN("Execute() runs properly") {
             cmd.Execute();
-            REQUIRE(std::remove(test_file.c_str()) == 0);
+            REQUIRE(FileExists(test_file));
         }
     }
 #endif

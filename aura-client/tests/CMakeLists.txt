@@ -38,11 +38,16 @@ add_executable(tests-bot tests-bot.cc
     "${PROJECT_SOURCE_DIR}/sysinfo.cc"
     "${PROJECT_SOURCE_DIR}/authfile.cc"
     "${PROJECT_SOURCE_DIR}/installer.cc")
+add_executable(tests-installer tests-installer.cc
+    "${PROJECT_SOURCE_DIR}/authfile.cc"
+    "${PROJECT_SOURCE_DIR}/installer.cc"
+    "${PROJECT_SOURCE_DIR}/util.cc")
 add_executable(tests-request tests-request.cc "${PROJECT_SOURCE_DIR}/request.cc")
 add_executable(tests-util tests-util.cc "${PROJECT_SOURCE_DIR}/util.cc")
 
 set(TESTS
     tests-bot
+    tests-installer
     tests-request
     tests-util
 )
