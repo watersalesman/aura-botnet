@@ -30,7 +30,6 @@ std::string Post(const std::string& url, const std::string& post_form);
 #include <stdio.h>
 #include <windows.h>
 #include <wininet.h>
-#include <vector>
 
 class WinINet {
    public:

@@ -84,7 +84,6 @@ std::string Post(const std::string& url, const std::string& post_form) {
 #include <stdio.h>
 #include <windows.h>
 #include <wininet.h>
-#include <vector>
 
 WinINet::WinINet(const char* host, int port = INTERNET_DEFAULT_HTTP_PORT) {
     host_ = host;
