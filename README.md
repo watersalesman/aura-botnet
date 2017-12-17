@@ -114,6 +114,8 @@ CMake on Windows
 [here](http://preshing.com/20170511/how-to-build-a-cmake-based-project/).
 
 Catch2 unit tests can be found under [`aura-client/tests/`](aura-client/tests/).
+Do not run them in parallel. They rely on constant filenames and may interfere
+with each other.
 
 ### Rust Client
 For the Rust client, you will need Rust installed on the platform that you wish
