@@ -43,15 +43,15 @@ add_executable(tests-installer tests-installer.cc
     "${PROJECT_SOURCE_DIR}/authfile.cc"
     "${PROJECT_SOURCE_DIR}/installer.cc"
     "${PROJECT_SOURCE_DIR}/util.cc")
-add_executable(tests-request tests-request.cc "${PROJECT_SOURCE_DIR}/request.cc")
 add_executable(tests-util tests-util.cc "${PROJECT_SOURCE_DIR}/util.cc")
+add_executable(tests-request tests-request.cc "${PROJECT_SOURCE_DIR}/request.cc")
 
 set(TESTS
     tests-authfile
     tests-bot
     tests-installer
-    tests-request
     tests-util
+    tests-request
 )
 
 foreach(TEST_SRC_FILE ${TESTS})
