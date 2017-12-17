@@ -43,9 +43,8 @@ void OSInfo::Collect() {
 }
 
 void UserInfo::Collect() {
-    data_ = util::IsSuperuser()
-                ? ADMIN_INSTALL_DIR + "\\"
-                : std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
+    data_ = std::getenv("USERNAME") + "." + std::getenv("USERDOMAIN");
+    if (util::IsSuperuser()) data_ += "(admin)";
 }
 
 #endif
