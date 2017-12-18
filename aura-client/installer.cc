@@ -11,13 +11,13 @@
 
 namespace fs = std::experimental::filesystem;
 
-Installer::Installer(std::string path) {
+Installer::Installer(const fs::path& path) {
     install_dir_ = path;
     InitAuthFile_();
 }
 
 void Installer::InitAuthFile_() {
-    auth_ = std::make_unique<AuthFile>(install_dir_ + AUTH_FILE);
+    auth_ = std::make_unique<AuthFile>(install_dir_ / AUTH_FILE);
     is_new_ = not auth_->Exists();
     if (IsNew())
         auth_->Init();
@@ -33,7 +33,7 @@ std::string Installer::GetAuthHash() { return auth_->GetHash(); }
 
 void Installer::InstallFiles() {
     fs::create_directories(install_dir_);
-    fs::copy_file(BIN, install_dir_ + BIN_NEW,
+    fs::copy_file(BIN, install_dir_ / BIN_NEW,
                   fs::copy_options::overwrite_existing);
 }
 
@@ -75,7 +75,7 @@ void Installer::InstallFiles() {
         timer_path = user_service_dir / timer_path;
     }
 
-    fs::copy_file(BIN, install_dir_ + BIN_NEW,
+    fs::copy_file(BIN, install_dir_ / BIN_NEW,
                   fs::copy_options::overwrite_existing);
     fs::copy_file(original_service, service_path,
                   fs::copy_options::overwrite_existing);
@@ -84,9 +84,8 @@ void Installer::InstallFiles() {
 
 void Installer::InitRecurringJob() {
     std::string systemd_command =
-        util::IsSuperuser()
-            ? "systemctl enable --now " + TIMER
-            : "systemctl enable --now --user " + TIMER;
+        util::IsSuperuser() ? "systemctl enable --now " + TIMER
+                            : "systemctl enable --now --user " + TIMER;
 
     std::system(systemd_command.c_str());
 }

