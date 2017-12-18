@@ -85,13 +85,10 @@ void Installer::InstallFiles() {
 }
 
 void Installer::InitRecurringJob() {
-    std::string systemd_command;
-
-    if (util::IsSuperuser()) {
-        systemd_command = "systemctl enable --now " + TIMER;
-    } else {
-        systemd_command = "systemctl enable --now --user " + TIMER;
-    }
+    std::string systemd_command =
+        util::IsSuperuser()
+            ? "systemctl enable --now " + TIMER
+            : "systemctl enable --now --user " + TIMER;
 
     std::system(systemd_command.c_str());
 }
