@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
-project (Aura)
-add_definitions(-DAURA_VERSION="0.1.2")
+project (aura)
 
-set(BIN aura)
+
+add_definitions(-DAURA_VERSION="0.1.2")
 
 # Set default CMake build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -19,7 +19,7 @@ set(LINUX_LIBS curl)
 set(WIN32_LIBS urlmon wininet)
 
 # Set executable
-add_executable(${BIN}
+add_executable(${PROJECT_NAME}
     aura.cc
     request.cc
     util.cc
@@ -31,12 +31,12 @@ add_executable(${BIN}
 
 if(UNIX AND NOT APPLE)
     add_definitions(-DCURL_STATICLIB)
-    target_link_libraries(${BIN} ${LINUX_LIBS})
+    target_link_libraries(${PROJECT_NAME} ${LINUX_LIBS})
 endif()
 
 if(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    target_link_libraries(${BIN} ${WIN32_LIBS})
+    target_link_libraries(${PROJECT_NAME} ${WIN32_LIBS})
 endif()
 
 # Define BUILD_TESTING to build tests
