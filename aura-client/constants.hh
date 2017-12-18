@@ -18,9 +18,9 @@ const std::unordered_map<std::string, std::tuple<std::string, std::string>>
 
 #ifdef WIN32
 
-const std::string INSTALL_DIR("AppData\\Local\\Microsoft\\Windows\\PowerShell");
+const std::string INSTALL_DIR("AppData/Local/Microsoft/Windows/PowerShell");
 const std::string ADMIN_INSTALL_DIR(
-    "C:\\ProgramData\\Microsoft\\Windows\\PowerShell");
+    "C:/ProgramData/Microsoft/Windows/PowerShell");
 
 const std::string AUTH_FILE("ProfileDataCache");
 const std::string BIN("aura.exe");

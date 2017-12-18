@@ -104,9 +104,9 @@ bool IsSuperuser() {
 std::string GetInstallDir() {
     std::string install_dir;
     if (IsSuperuser()) {
-        install_dir = ADMIN_INSTALL_DIR + "\\";
+        install_dir = ADMIN_INSTALL_DIR + "/";
     } else {
-        install_dir = std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
+        install_dir = std::getenv("USERPROFILE") + ("/" + INSTALL_DIR + "/");
     }
 
     return install_dir;
