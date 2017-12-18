@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include <experimental/filesystem>
 #include "installer.hh"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
@@ -13,9 +14,11 @@
 #include "sysinfo.hh"
 #include "util.hh"
 
+namespace fs = std::experimental::filesystem;
+
 class Bot {
    public:
-    Bot(const std::string& install_dir);
+    Bot(const fs::path& install_dir);
     bool IsNew();
     void Install();
     void RegisterBot(const std::string& register_url);

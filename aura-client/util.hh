@@ -4,42 +4,25 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <experimental/filesystem>
 #include <fstream>
 #include <string>
 
 #include "constants.hh"
 #include "request.hh"
 
-namespace util {
+namespace fs = std::experimental::filesystem;
 
-// Undefine CopyFile macro from windows.h
-#undef CopyFile
-bool CopyFile(std::string source_path, std::string new_path);
+namespace util {
 
 bool IsSuperuser();
 
-/* Determine install directory based on operating system, permissions, and
- * values in constants.hh */
-std::string GetInstallDir();
+/* Determine install directory based on operating system, permissions, and other
+ * factors */
+fs::path GetInstallDir();
 
 // Run system command and return output as string
 std::string PopenSubprocess(const std::string& command);
-
-/* Linux-specific components */
-#ifdef __linux__
-
-#include <unistd.h>
-
-int LinkFile(std::string source_file, std::string new_file);
-
-#endif  // __linux__
-
-/* Windows-specific components */
-#ifdef WIN32
-
-#include <windows.h>
-
-#endif  // WIN32
 
 }  // namespace util
 

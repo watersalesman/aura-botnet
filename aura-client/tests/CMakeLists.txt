@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 enable_testing()
 
-set(LINUX_LIBS curl)
+set(LINUX_LIBS curl stdc++fs)
 set(WIN32_LIBS urlmon wininet)
 
 # Set include directories for needed header files
@@ -43,14 +43,12 @@ add_executable(tests-installer tests-installer.cc
     "${PROJECT_SOURCE_DIR}/authfile.cc"
     "${PROJECT_SOURCE_DIR}/installer.cc"
     "${PROJECT_SOURCE_DIR}/util.cc")
-add_executable(tests-util tests-util.cc "${PROJECT_SOURCE_DIR}/util.cc")
 add_executable(tests-request tests-request.cc "${PROJECT_SOURCE_DIR}/request.cc")
 
 set(TESTS
     tests-authfile
     tests-bot
     tests-installer
-    tests-util
     tests-request
 )
 

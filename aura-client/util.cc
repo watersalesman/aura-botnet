@@ -3,31 +3,18 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <experimental/filesystem>
 #include <fstream>
 #include <string>
 
 #include "constants.hh"
 #include "request.hh"
 
+namespace fs = std::experimental::filesystem;
+
 namespace util {
 
 #ifdef __linux__
-
-#include <unistd.h>
-
-bool CopyFile(std::string source_file, std::string new_file) {
-    std::ifstream source_stream(source_file, std::ios::binary);
-    std::ofstream new_stream(new_file, std::ios::binary | std::ios::trunc);
-    if (source_stream.is_open() && new_stream.is_open()) {
-        new_stream << source_stream.rdbuf();
-        return true;
-    } else
-        return false;
-}
-
-int LinkFile(std::string source_file, std::string new_file) {
-    return link(source_file.c_str(), new_file.c_str());
-}
 
 std::string PopenSubprocess(const std::string& command) {
     FILE* pipe;
@@ -48,13 +35,10 @@ std::string PopenSubprocess(const std::string& command) {
 
 bool IsSuperuser() { return (PopenSubprocess("id -u | tr -d '\n'") == "0"); }
 
-std::string GetInstallDir() {
-    std::string install_dir;
-    if (IsSuperuser()) {
-        install_dir = ROOT_HOME + "/" + INSTALL_DIR + "/";
-    } else {
-        install_dir = std::getenv("HOME") + ("/" + INSTALL_DIR + "/");
-    }
+fs::path GetInstallDir() {
+    fs::path install_dir = INSTALL_DIR;
+    install_dir = IsSuperuser() ? ROOT_HOME / install_dir
+                                : std::getenv("HOME") / install_dir;
 
     return install_dir;
 }
@@ -63,15 +47,8 @@ std::string GetInstallDir() {
 
 #ifdef WIN32
 
-#include <windows.h>
-
 bool IS_SUPERUSER;
 bool IS_SUPERUSER_IS_CACHED = false;
-
-// Use CopyFileA from windows.h
-bool CopyFile(std::string source_file, std::string new_file) {
-    return CopyFileA(source_file.c_str(), new_file.c_str(), false);
-}
 
 std::string PopenSubprocess(const std::string& command) {
     FILE* pipe;
@@ -101,13 +78,11 @@ bool IsSuperuser() {
     }
 }
 
-std::string GetInstallDir() {
-    std::string install_dir;
-    if (IsSuperuser()) {
-        install_dir = ADMIN_INSTALL_DIR + "\\";
-    } else {
-        install_dir = std::getenv("USERPROFILE") + ("\\" + INSTALL_DIR + "\\");
-    }
+fs::path GetInstallDir() {
+    fs::path install_dir;
+    install_dir = IsSuperuser()
+                      ? ADMIN_INSTALL_DIR
+                      : std::getenv("USERPROFILE") + ("/" + INSTALL_DIR);
 
     return install_dir;
 }

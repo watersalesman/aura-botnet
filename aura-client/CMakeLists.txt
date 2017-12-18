@@ -15,7 +15,7 @@ set(RAPIDJSON_INCLUDE "${CMAKE_SOURCE_DIR}/deps/rapidjson/include/")
 include_directories(${PICOSHA2_INCLUDE} ${RAPIDJSON_INCLUDE})
 
 # Set libraries
-set(LINUX_LIBS curl)
+set(LINUX_LIBS curl stdc++fs)
 set(WIN32_LIBS urlmon wininet)
 
 # Set executable
