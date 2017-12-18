@@ -140,7 +140,7 @@ void WinINet::Request(const std::string& method, INTERNET_SCHEME scheme,
 
         // Send request
         BOOL request_success = HttpSendRequestA(request_, header.c_str(),
-                                                header_len, form, form_len);
+                                                header_len, form.get(), form_len);
 
         // Read request response
         if (request_success) {
