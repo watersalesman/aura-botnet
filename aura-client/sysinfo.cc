@@ -43,7 +43,7 @@ void OSInfo::Collect() {
 }
 
 void UserInfo::Collect() {
-    data_ = std::getenv("USERNAME") + "." + std::getenv("USERDOMAIN");
+    data_ = std::getenv("USERNAME") + (std::string)"." + std::getenv("USERDOMAIN");
     if (util::IsSuperuser()) data_ += "(admin)";
 }
 
