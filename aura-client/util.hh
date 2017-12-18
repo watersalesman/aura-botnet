@@ -12,34 +12,14 @@
 
 namespace util {
 
-// Undefine CopyFile macro from windows.h
-#undef CopyFile
-bool CopyFile(std::string source_path, std::string new_path);
-
 bool IsSuperuser();
 
-/* Determine install directory based on operating system, permissions, and
- * values in constants.hh */
+/* Determine install directory based on operating system, permissions, and other
+ * factors */
 std::string GetInstallDir();
 
 // Run system command and return output as string
 std::string PopenSubprocess(const std::string& command);
-
-/* Linux-specific components */
-#ifdef __linux__
-
-#include <unistd.h>
-
-int LinkFile(std::string source_file, std::string new_file);
-
-#endif  // __linux__
-
-/* Windows-specific components */
-#ifdef WIN32
-
-#include <windows.h>
-
-#endif  // WIN32
 
 }  // namespace util
 

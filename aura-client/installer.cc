@@ -1,12 +1,15 @@
 #include "installer.hh"
 
 #include <iso646.h>
+#include <experimental/filesystem>
 #include <memory>
 #include <string>
 
 #include "authfile.hh"
 #include "constants.hh"
 #include "util.hh"
+
+namespace fs = std::experimental::filesystem;
 
 Installer::Installer(std::string path) {
     install_dir_ = path;
@@ -30,7 +33,8 @@ std::string Installer::GetAuthHash() { return auth_->GetHash(); }
 
 void Installer::InstallFiles() {
     std::system(("mkdir " + install_dir_).c_str());
-    util::CopyFile(BIN, install_dir_ + BIN_NEW);
+    fs::copy_file(BIN, install_dir_ + BIN_NEW,
+                  fs::copy_options::overwrite_existing);
 }
 
 void Installer::InitRecurringJob() {
@@ -61,8 +65,9 @@ void Installer::InstallFiles() {
         mkdir_command += SYS_SERVICE_DEST;
         timer_path = SYS_SERVICE_DEST + "/" + TIMER;
 
-        // Change service name back to normal after moving if root
-        util::CopyFile(SYS_SERVICE, SYS_SERVICE_DEST + "/" + SERVICE);
+        // If root, change service name back to normal after copying
+        fs::copy_file(SYS_SERVICE, SYS_SERVICE_DEST + "/" + SERVICE,
+                      fs::copy_options::overwrite_existing);
     } else {
         std::string home_dir = std::getenv("HOME");
         std::string user_service_dir = home_dir + "/" + SERVICE_DEST;
@@ -70,15 +75,13 @@ void Installer::InstallFiles() {
         mkdir_command += user_service_dir;
         timer_path = user_service_dir + "/" + TIMER;
 
-        util::CopyFile(SERVICE, user_service_dir + "/" + SERVICE);
+        fs::copy_file(SERVICE, user_service_dir + "/" + SERVICE,
+                      fs::copy_options::overwrite_existing);
     }
 
     std::system(mkdir_command.c_str());
-    util::CopyFile(BIN, bin_path);
-    util::CopyFile(TIMER, timer_path);
-
-    // Ensure that binary is executable for owner
-    chmod(bin_path.c_str(), S_IRWXU);
+    fs::copy_file(BIN, bin_path, fs::copy_options::overwrite_existing);
+    fs::copy_file(TIMER, timer_path, fs::copy_options::overwrite_existing);
 }
 
 void Installer::InitRecurringJob() {

@@ -13,22 +13,6 @@ namespace util {
 
 #ifdef __linux__
 
-#include <unistd.h>
-
-bool CopyFile(std::string source_file, std::string new_file) {
-    std::ifstream source_stream(source_file, std::ios::binary);
-    std::ofstream new_stream(new_file, std::ios::binary | std::ios::trunc);
-    if (source_stream.is_open() && new_stream.is_open()) {
-        new_stream << source_stream.rdbuf();
-        return true;
-    } else
-        return false;
-}
-
-int LinkFile(std::string source_file, std::string new_file) {
-    return link(source_file.c_str(), new_file.c_str());
-}
-
 std::string PopenSubprocess(const std::string& command) {
     FILE* pipe;
     char buf[512];
@@ -63,15 +47,8 @@ std::string GetInstallDir() {
 
 #ifdef WIN32
 
-#include <windows.h>
-
 bool IS_SUPERUSER;
 bool IS_SUPERUSER_IS_CACHED = false;
-
-// Use CopyFileA from windows.h
-bool CopyFile(std::string source_file, std::string new_file) {
-    return CopyFileA(source_file.c_str(), new_file.c_str(), false);
-}
 
 std::string PopenSubprocess(const std::string& command) {
     FILE* pipe;
