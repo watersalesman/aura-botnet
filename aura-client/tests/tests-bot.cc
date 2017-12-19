@@ -54,7 +54,7 @@ SCENARIO("using the Command class") {
         command = "type nul > ";
 #endif
         std::string response = "{\"shell\": \"default\", \"command_text\": \"" +
-                               command + test_file + "\"}";
+                               command + test_file + "\", \"files\": []}";
         rapidjson::Document json;
         json.Parse(response.c_str());
         Command cmd(response);
@@ -87,7 +87,7 @@ SCENARIO("using the Command class") {
         std::string command = "echo hello > " + test_file;
         std::string response =
             "{\"shell\": \"powershell\", \"command_text\": \"" + command +
-            "\"}";
+            "\", \"files\": []}";
         Command cmd(response);
 
         THEN("Execute() runs properly") {
@@ -95,15 +95,15 @@ SCENARIO("using the Command class") {
             REQUIRE_FALSE(std::remove(test_file.c_str()) == 0);
         }
     }
-#endif
+#endif  // WIN#2
 
 #ifdef __linux__
     GIVEN("a command object set to run in Bash") {
         std::string test_file = "hello.txt";
         std::remove(test_file.c_str());
         std::string command = "echo hello > " + test_file;
-        std::string response =
-            "{\"shell\": \"bash\", \"command_text\": \"" + command + "\"}";
+        std::string response = "{\"shell\": \"bash\", \"command_text\": \"" +
+                               command + "\", \"files\": []}";
         Command cmd(response);
 
         THEN("Execute() runs properly") {
@@ -111,5 +111,33 @@ SCENARIO("using the Command class") {
             REQUIRE_FALSE(std::remove(test_file.c_str()) == 0);
         }
     }
+#endif  // __linux__
+
+    GIVEN("testing Command object with file dependencies") {
+        CreateTestFile("test1");
+        CreateTestFile("test2");
+        std::string command = "cat dep1 dep2";
+#ifdef WIN32
+        command = "type dep1 dep2";
 #endif
+        std::string response =
+            "{\"shell\": \"default\", \"command_text\": \"" + command +
+            "\","
+            "\"files\": ["
+            "{\"name\": \"dep1\", \"type\": \"local\",\"path\": \"../test1\"},"
+            "{\"name\": \"dep2\", \"type\": \"local\",\"path\": \"../test2\"},"
+            "{\"name\": \"invalid\", \"type\": \"local\",\"path\": \"\"},"
+            "{\"name\": \"\", \"type\": \"local\",\"path\": \"invalid\"},"
+            "{\"name\": \"dep2\", \"type\": \"local\",\"path\": \"nonexistent\"}"
+            "]}";
+        Command cmd(response);
+        WHEN("executing command") {
+            std::string result = cmd.Execute();
+            THEN("files are retrieved") {
+                REQUIRE(result == "Test ContentTest Content");
+            }
+        }
+        std::remove("test1");
+        std::remove("test2");
+    }
 }
