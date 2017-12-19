@@ -66,7 +66,7 @@ SCENARIO("using the Command class") {
 
         THEN("execute command") {
             REQUIRE(util::PopenSubprocess(cmd.Execute()) == "");
-            REQUIRE(std::remove(test_file.c_str()) == 0);
+            REQUIRE_FALSE(std::remove(test_file.c_str()) == 0);
         }
     }
 
@@ -84,7 +84,6 @@ SCENARIO("using the Command class") {
 #ifdef WIN32
     GIVEN("a command object set to run in PowerShell") {
         std::string test_file = "hello.txt";
-        std::remove(test_file.c_str());
         std::string command = "echo hello > " + test_file;
         std::string response =
             "{\"shell\": \"powershell\", \"command_text\": \"" + command +
@@ -93,7 +92,7 @@ SCENARIO("using the Command class") {
 
         THEN("Execute() runs properly") {
             cmd.Execute();
-            REQUIRE(FileExists(test_file));
+            REQUIRE_FALSE(std::remove(test_file.c_str()) == 0);
         }
     }
 #endif
@@ -109,7 +108,7 @@ SCENARIO("using the Command class") {
 
         THEN("Execute() runs properly") {
             cmd.Execute();
-            REQUIRE(FileExists(test_file));
+            REQUIRE_FALSE(std::remove(test_file.c_str()) == 0);
         }
     }
 #endif

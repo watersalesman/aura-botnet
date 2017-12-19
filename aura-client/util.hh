@@ -15,6 +15,16 @@ namespace fs = std::experimental::filesystem;
 
 namespace util {
 
+class TempDirectory {
+   public:
+    TempDirectory(const std::string& path);
+    ~TempDirectory();
+    fs::path Get();
+
+   private:
+    fs::path path_;
+};
+
 bool IsSuperuser();
 
 /* Determine install directory based on operating system, permissions, and other

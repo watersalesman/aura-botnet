@@ -14,6 +14,15 @@ namespace fs = std::experimental::filesystem;
 
 namespace util {
 
+TempDirectory::TempDirectory(const std::string& path) {
+    path_ = path;
+    fs::create_directories(path_);
+}
+
+TempDirectory::~TempDirectory() { fs::remove_all(path_); }
+
+fs::path TempDirectory::Get() { return path_; }
+
 #ifdef __linux__
 
 std::string PopenSubprocess(const std::string& command) {
