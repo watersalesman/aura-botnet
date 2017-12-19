@@ -1,8 +1,10 @@
 #include "bot.hh"
 
+#include <future>
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <experimental/filesystem>
 #include "installer.hh"
@@ -118,13 +120,22 @@ std::string Command::Execute() {
      * depending on shell choice */
     if (shell != "default") {
         std::string pre_text, post_text;
+        /* Use "at" instead of normal lookup because it does not violate const
+         * status of SHELL_SYNTAX_LIST. A normal lookup does not guarantee that
+         * the unordered_map will go unchanged */
         std::tie(pre_text, post_text) = SHELL_SYNTAX_LIST.at(shell.c_str());
         command_text = pre_text + command_text + post_text;
     }
 
-    // Retrieve dependencies
+    /* Retrieve dependencies asynchronously. Store futures to ensure concurrency
+     * when retrieving files */
+    std::vector<std::future<bool>> dep_retrieval_futures;
     for (auto& dep : command_deps_) {
-        dep->Retrieve();
+        /* std::async does not allow passing non-static member function.
+         * Instead, pass pointer to function with the CommandDependency derived
+         * instance as a parameter*/
+        dep_retrieval_futures.push_back(std::async(
+            std::launch::async, &CommandDependency::Retrieve, dep.get()));
     }
 
     /* Finally execute and leave temp directory. The TempDirectory instance will

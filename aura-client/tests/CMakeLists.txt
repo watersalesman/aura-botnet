@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 enable_testing()
 
-set(LINUX_LIBS curl stdc++fs)
+set(LINUX_LIBS curl stdc++fs pthread)
 set(WIN32_LIBS urlmon wininet)
 
 # Set include directories for needed header files
