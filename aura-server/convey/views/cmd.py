@@ -8,6 +8,8 @@ import json
 
 # Grab a Command object based on a hash_sum or group number
 # If no command exists for the query, return None
+
+
 def query_cmd(bot, query_set, hash_sum=None, group=None):
     cmd_list = None
     if hash_sum:
@@ -28,32 +30,47 @@ def query_cmd(bot, query_set, hash_sum=None, group=None):
 
     return None
 
+
 def get_current_cmd(bot, active_cmds):
     # Prioritize individual commands, ALL commands, group commands, and lastly
     # DEFAULT commands
     command = query_cmd(bot, active_cmds, hash_sum=bot.hash_sum)
-    if command: return command
+    if command:
+        return command
 
     command = query_cmd(bot, active_cmds, group=-1)
-    if command: return command
+    if command:
+        return command
 
     command = query_cmd(bot, active_cmds, group=bot.group)
-    if command: return command
+    if command:
+        return command
 
     command = query_cmd(bot, active_cmds, group=-2)
-    if command: return command
+    if command:
+        return command
 
     # If no commands are in the bot's queue, return None
     return None
 
+
 def command_to_json(command):
     cmd_dict = {
-        "shell": command.shell,
-        "command_text": command.cmd_txt,
+        'shell': command.shell,
+        'command_text': command.cmd_txt,
+        'files': [],
     }
+    for dep in command.file_set.all():
+        depfile_dict = {
+            'name': dep.name,
+            'type': dep.file_type,
+            'path': dep.path
+        }
+        cmd_dict['files'].append(depfile_dict)
     json_str = json.dumps(cmd_dict)
 
     return json_str
+
 
 @csrf_exempt
 def cmd(request):
@@ -82,7 +99,7 @@ def cmd(request):
         raise Http404
 
     # If command selected then continue, else return 404
-    command = get_current_cmd(bot, active_cmds);
+    command = get_current_cmd(bot, active_cmds)
     if command:
         # Then check if bot already ran command
         # If not, then add command to bot's list of completed commands

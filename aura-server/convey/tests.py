@@ -1,7 +1,7 @@
 import datetime
 from django.test import TestCase
 from django.utils import timezone
-from convey.models import Bot, Command
+from convey.models import Bot, Command, File
 import json
 
 
@@ -245,3 +245,40 @@ class CmdViewTests(TestCase):
         )
         self.assertEqual(response.content.decode('utf-8'), cmd.cmd_txt)
 
+    def test_json_has_empty_file_deps(self):
+        bot = create_bot()
+        cmd = create_command()
+        response = self.client.post(
+            '/convey/cmd/',
+            {
+                'version': bot.version,
+                'hash_sum': bot.hash_sum,
+            }
+        )
+        command_json = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(command_json['files'], [])
+
+    def test_json_has_file_deps(self):
+        bot = create_bot()
+        cmd = create_command()
+        cmd.file_set.bulk_create([
+            File(name="file1",file_type="local",path="/etc/test",command_id=cmd.id),
+            File(name="file2",file_type="network", path="https://google.com",command_id=cmd.id),
+            File(name="file3",file_type="local", path="/etc/test2",command_id=cmd.id),
+        ])
+        response = self.client.post(
+            '/convey/cmd/',
+            {
+                'version': bot.version,
+                'hash_sum': bot.hash_sum,
+            }
+        )
+        command_json = json.loads(response.content.decode('utf-8'))
+        self.assertNotEqual(command_json['files'], [])
+        self.assertEqual(len(command_json['files']), 3)
+        dep_data = [
+                {'name': 'file1', 'type': 'local', 'path': '/etc/test'},
+                {'name': 'file2', 'type': 'network', 'path': 'https://google.com'},
+                {'name': 'file3', 'type': 'local', 'path': '/etc/test2'},
+        ]
+        self.assertEqual(dep_data, command_json['files'])

@@ -30,7 +30,8 @@ class Command(models.Model):
         return "Group {}: {}".format(self.group_assigned, self.cmd_txt)
 
 class File(models.Model):
-    file_name = models.CharField(max_length=256)
+    command = models.ForeignKey(Command, on_delete=models.CASCADE)
+    name = models.CharField(max_length=256)
     file_type = models.CharField(
             max_length=25,
             choices=(
@@ -38,8 +39,10 @@ class File(models.Model):
                 ('network', 'Network'),
             )
     )
-    file_path = models.CharField(max_length=1000)
-    command = models.ForeignKey(Command, on_delete=models.CASCADE)
+    path = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return "{}: {}".format(self.file_type.title(), self.name)
 
 class Bot(models.Model):
     version = models.CharField(max_length=15, null=True, blank=True)
