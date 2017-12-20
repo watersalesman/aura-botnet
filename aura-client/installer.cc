@@ -41,7 +41,7 @@ void Installer::InitRecurringJob() {
     // Schedule task for Windows
     std::string task_command = "schtasks.exe /create /F /tn " + TASK_NAME +
                                " /sc " + TASK_FREQ + " /mo " + TASK_FREQ_VALUE +
-                               " /tr " + install_dir_ + BIN_NEW;
+                               " /tr " + (install_dir_ / BIN_NEW).string();
     task_command += util::IsSuperuser() ? " /rl highest" : "";
 
     std::system(task_command.c_str());
