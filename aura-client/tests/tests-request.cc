@@ -90,13 +90,13 @@ SCENARIO("Working with request::DownloadFile()") {
         WHEN("Downloading the file") {
             request::DownloadFile(url, file_name);
             THEN("File is downloaded properly") {
-                std::ifstream file_stream(file_name.c_str());
+                std::ifstream file_stream(file_name.c_str(), std::ios::binary);
                 REQUIRE(file_stream.good());
                 REQUIRE(GetFileHash(file_stream) ==
                         "c028d7aa15e851b0eefb31638a1856498a237faf1829050832d3b9"
                         "b19f9ab75f");
-                REQUIRE(std::remove(file_name.c_str()) == 0);
             }
+			REQUIRE(std::remove(file_name.c_str()) == 0);
         }
     }
 }
