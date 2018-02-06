@@ -1,3 +1,6 @@
+#define UNICODE
+#define _UNICODE
+
 #include "request.hh"
 
 #include <string>
@@ -157,7 +160,7 @@ static std::string RequestHandler(const std::string& http_method,
                                   const std::string& url,
                                   const std::string& data = "") {
     // Use InternetCrackUrlA() to parse URL
-    URL_COMPONENTS url_parts;
+    URL_COMPONENTSA url_parts;
     char scheme[20], host[128], user[256], pass[256], uri[512], extra_info[512];
     url_parts.lpszScheme = scheme;
     url_parts.dwSchemeLength = sizeof(scheme);

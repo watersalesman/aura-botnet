@@ -1,3 +1,6 @@
+#define UNICODE
+#define _UNICODE
+
 #ifndef REQUEST_HH
 #define REQUEST_HH
 
