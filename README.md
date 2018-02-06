@@ -191,10 +191,6 @@ testing and demonstrations.
 The *killswitch* folder contains scripts for easy client removal when testing
 on your devices.
 
-TODO
----
-* Support for sending file dependencies for commands through JSON
-
 <h2>This repo is for testing/demonstration purposes only. This is not meant to
 be implemented in any real world applications except for testing on authorized
 machines.</h2>
