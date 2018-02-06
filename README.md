@@ -136,8 +136,8 @@ Configuring Commands
 These can easily be managed through the Django admin site or shell. The
 client periodically communicates with the specified server using POST
 requests to receive a command (default is every 5 minutes). Commands are
-received as a JSON object specifying the shell to run the command in, and
-the command to execute.
+received as a JSON object specifying the shell to run the command in, file
+dependencies, and the command to execute.
 
 Commands can be set to run for specific bot groups defined by operating
 system and user privilege.  This is specified in
@@ -149,6 +149,11 @@ individual bots using the hash of their auth file.
 
 Each command can be given a start time and end time. Oneshot commands will
 only run once on each bot.
+
+You can also specify file dependencies. These will be retrieved, before
+running the command, into the same temporary directory that the command is
+executed in. You can specify files on the bot's local filesystem with a file
+path or a network file with a url path.
 
 Client Web Delivery
 ---
