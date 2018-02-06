@@ -124,20 +124,26 @@ SCENARIO("using the Command class") {
             "{\"shell\": \"default\", \"command_text\": \"" + command +
             "\","
             "\"files\": ["
+            "{\"name\": \"netfile1\", \"type\": \"network\",\"path\": "
+            "\"https://httpbin.org/image/jpeg\"},"
             "{\"name\": \"dep1\", \"type\": \"local\",\"path\": \"../test1\"},"
             "{\"name\": \"dep2\", \"type\": \"local\",\"path\": \"../test2\"},"
             "{\"name\": \"invalid\", \"type\": \"local\",\"path\": \"\"},"
             "{\"name\": \"\", \"type\": \"local\",\"path\": \"invalid\"},"
-            "{\"name\": \"dep2\", \"type\": \"local\",\"path\": \"nonexistent\"}"
+            "{\"name\": \"dep2\", \"type\": \"local\",\"path\": "
+            "\"nonexistent\"}"
             "]}";
         Command cmd(response);
         WHEN("executing command") {
             std::string result = cmd.Execute();
-            THEN("files are retrieved") {
+            THEN("local files are retrieved") {
                 REQUIRE(result == "Test ContentTest Content");
             }
         }
-        std::remove("test1");
-        std::remove("test2");
+        REQUIRE(std::remove("netfile1") != 0);
+        REQUIRE(std::remove("dep1") != 0);
+        REQUIRE(std::remove("dep2") != 0);
+        REQUIRE(std::remove("test1") == 0);
+        REQUIRE(std::remove("test2") == 0);
     }
 }

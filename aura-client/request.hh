@@ -20,11 +20,11 @@ class PostForm {
     std::vector<std::tuple<std::string, std::string>> data_;
 };
 
-// GET request
 std::string Get(const std::string& url);
 
-// POST request
 std::string Post(const std::string& url, const std::string& post_form);
+
+bool DownloadFile(const std::string& url, const std::string& file_path);
 
 }  // namespace request
 

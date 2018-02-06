@@ -1,6 +1,8 @@
+#include <fstream>
 #include <string>
 
 #include "catch.hpp"
+#include "helper.hh"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
@@ -76,6 +78,24 @@ SCENARIO("Working with request::Post() and PostField class") {
                     REQUIRE(json["form"][field2.c_str()].IsString());
                     REQUIRE(json["form"][field2.c_str()].GetString() == value2);
                 }
+            }
+        }
+    }
+}
+
+SCENARIO("Working with request::DownloadFile()") {
+    GIVEN("the jpeg file at url https://httpbin.org/image/jpeg") {
+        std::string url = "https://httpbin.org/image/jpeg";
+        std::string file_name = "test.jpeg";
+        WHEN("Downloading the file") {
+            request::DownloadFile(url, file_name);
+            THEN("File is downloaded properly") {
+                std::ifstream file_stream(file_name.c_str());
+                REQUIRE(file_stream.good());
+                REQUIRE(GetFileHash(file_stream) ==
+                        "c028d7aa15e851b0eefb31638a1856498a237faf1829050832d3b9"
+                        "b19f9ab75f");
+                REQUIRE(std::remove(file_name.c_str()) == 0);
             }
         }
     }

