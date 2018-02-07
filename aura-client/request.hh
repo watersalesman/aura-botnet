@@ -38,8 +38,6 @@ class WinINet {
    public:
     WinINet(const char* host, int port);
     ~WinINet();
-    std::string GetHost() { return host_; }
-    int GetPort() { return port_; }
     void Request(const std::string& method, INTERNET_SCHEME scheme,
                  const std::string& uri, const std::string& data);
     std::string GetResponse() { return response_; }
