@@ -27,7 +27,6 @@ class Bot {
     void ExecuteCommand(const std::string& command_url);
 
    private:
-    bool is_new_;
     std::unique_ptr<Installer> install_;
     std::unique_ptr<sysinfo::DataList> sysinfo_;
 };
