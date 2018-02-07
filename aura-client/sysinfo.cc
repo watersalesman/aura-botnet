@@ -43,13 +43,14 @@ void OSInfo::Collect() {
 }
 
 void UserInfo::Collect() {
-    data_ = std::getenv("USERNAME") + (std::string)"." + std::getenv("USERDOMAIN");
+    data_ =
+        std::getenv("USERNAME") + (std::string) "." + std::getenv("USERDOMAIN");
     if (util::IsSuperuser()) data_ += "(admin)";
 }
 
 #endif
 
-DataList::DataList(std::string auth_hash) {
+DataList::DataList(const std::string& auth_hash) {
     auth_hash_ = auth_hash;
     list_.emplace_back(std::move(std::make_unique<VersionInfo>()));
     list_.emplace_back(std::move(std::make_unique<HashTypeInfo>()));

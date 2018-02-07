@@ -54,7 +54,7 @@ DEFINE_DATA_MODULE(UserInfo, USER_FIELD);
 // Holds pointers to DataModule objects and creates POST form from them
 class DataList {
    public:
-    DataList(std::string auth_hash);
+    DataList(const std::string& auth_hash);
     std::string GetPostData();
 
    private:

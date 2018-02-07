@@ -61,7 +61,7 @@ struct NetworkFileDep : public CommandDependency {
 /* Parses JSON response from C2 server and executes that command */
 class Command {
    public:
-    Command(std::string& c2_response);
+    Command(const std::string& c2_response);
     std::string Execute();
 
     std::string command_text;

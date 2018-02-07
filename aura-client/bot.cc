@@ -77,7 +77,7 @@ bool NetworkFileDep::Retrieve() {
     }
 }
 
-Command::Command(std::string& c2_response) {
+Command::Command(const std::string& c2_response) {
     // Parse into something resembling a nested unordered map
     rapidjson::Document json;
     json.Parse(c2_response.c_str());
