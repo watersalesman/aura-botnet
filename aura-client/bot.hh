@@ -1,11 +1,11 @@
 #ifndef BOT_HH
 #define BOT_HH
 
+#include <experimental/filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
 
-#include <experimental/filesystem>
 #include "installer.hh"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"

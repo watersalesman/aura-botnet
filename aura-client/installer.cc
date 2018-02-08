@@ -1,33 +1,17 @@
 #include "installer.hh"
 
-#include <iso646.h>
 #include <experimental/filesystem>
 #include <memory>
 #include <string>
 
-#include "authfile.hh"
 #include "constants.hh"
 #include "util.hh"
 
 namespace fs = std::experimental::filesystem;
 
-Installer::Installer(const fs::path& path) {
-    install_dir_ = path;
-    InitAuthFile_();
+Installer::Installer(const fs::path& install_dir) {
+    install_dir_ = install_dir;
 }
-
-void Installer::InitAuthFile_() {
-    auth_ = std::make_unique<AuthFile>(install_dir_ / AUTH_FILE);
-    is_new_ = not auth_->Exists();
-    if (IsNew())
-        auth_->Init();
-    else
-        auth_->Retrieve();
-}
-
-bool Installer::IsNew() { return is_new_; }
-
-std::string Installer::GetAuthHash() { return auth_->GetHash(); }
 
 #ifdef WIN32
 
@@ -44,7 +28,7 @@ void Installer::InitRecurringJob() {
                                " /tr " + (install_dir_ / BIN_NEW).string();
     task_command += util::IsSuperuser() ? " /rl highest" : "";
 
-    std::system(task_command.c_str());
+    util::PopenSubprocess(task_command);
 }
 
 #endif  // WIN32
@@ -87,7 +71,7 @@ void Installer::InitRecurringJob() {
         util::IsSuperuser() ? "systemctl enable --now " + TIMER
                             : "systemctl enable --now --user " + TIMER;
 
-    std::system(systemd_command.c_str());
+    util::PopenSubprocess(systemd_command);
 }
 
 #endif  // __linux__
