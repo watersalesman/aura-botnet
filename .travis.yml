@@ -1,7 +1,7 @@
-language: cpp
 matrix:
     include:
         - os: linux
+          language: cpp
           env:
               - MATRIX_EVAL="export CXX=g++-6"
           addons:
@@ -12,6 +12,7 @@ matrix:
                       - g++-6
 
         - os: linux
+          language: cpp
           env:
               - MATRIX_EVAL="export CXX=g++-7"
           addons:
@@ -21,6 +22,37 @@ matrix:
                   packages:
                       - g++-7
 
+        - os: linux
+          language: python
+          python: "3.4"
+          install:
+              - pip install django
+          script:
+              - cd aura-server
+              - ./manage.py migrate
+              - ./manage.py test
+
+        - os: linux
+          language: python
+          python: "3.5"
+          install:
+              - pip install django
+          script:
+              - cd aura-server
+              - ./manage.py migrate
+              - ./manage.py test
+
+        - os: linux
+          language: python
+          python: "3.6"
+          install:
+              - pip install django
+          script:
+              - cd aura-server
+              - ./manage.py migrate
+              - ./manage.py test
+
+# Default settings for C++ client build
 before_install:
   - test -n $CXX && unset CXX
   - eval "${MATRIX_EVAL}"
