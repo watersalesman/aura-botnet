@@ -1,6 +1,8 @@
 # Aura Botnet
 
 [![Build Status](https://travis-ci.org/watersalesman/aura-botnet.svg?branch=master)](https://travis-ci.org/watersalesman/aura-botnet)
+[![Build status](https://ci.appveyor.com/api/projects/status/8jvylxhgckob2eht/branch/master?svg=true)](https://ci.appveyor.com/project/watersalesman/aura-botnet/branch/master)
+
 
 C2 Server
 ---

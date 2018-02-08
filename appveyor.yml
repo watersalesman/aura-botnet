@@ -1,0 +1,47 @@
+version: 1.0.{build}
+
+pull_requests:
+
+  do_not_increment_build_number: true
+
+image:
+
+- Visual Studio 2017
+
+- Visual Studio 2015
+
+install:
+
+- cmd: git submodule update --init --recursive
+
+build_script:
+
+- ps: >-
+
+    cd aura-client
+
+
+
+    cmake . -DCMAKE_BUILD_TYPE=Debug
+
+
+
+    cmake --build .
+
+test_script:
+
+- ps: ctest --output-on-failure
+
+notifications:
+
+- provider: Email
+
+  to:
+
+  - rramos1295@gmail.com
+
+  on_build_success: false
+
+  on_build_failure: true
+
+  on_build_status_changed: false
