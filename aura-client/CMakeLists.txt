@@ -18,6 +18,10 @@ include_directories(${PICOSHA2_INCLUDE} ${RAPIDJSON_INCLUDE})
 set(LINUX_LIBS curl stdc++fs pthread)
 set(WIN32_LIBS urlmon wininet)
 
+# Set standard
+set (CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Set executable
 add_executable(${PROJECT_NAME}
     aura.cc

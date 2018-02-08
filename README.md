@@ -1,5 +1,7 @@
 # Aura Botnet
 
+[![Build Status](https://travis-ci.org/watersalesman/aura-botnet.svg?branch=master)](https://travis-ci.org/watersalesman/aura-botnet)
+
 C2 Server
 ---
 The botnet's C2 server utilizes the Django framework as the backend.
