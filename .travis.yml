@@ -1,0 +1,32 @@
+language: cpp
+matrix:
+    include:
+        - os: linux
+          env:
+              - MATRIX_EVAL="export CXX=g++-6"
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - g++-6
+
+        - os: linux
+          env:
+              - MATRIX_EVAL="export CXX=g++-7"
+          addons:
+              apt:
+                  sources:
+                      - ubuntu-toolchain-r-test
+                  packages:
+                      - g++-7
+
+before_install:
+  - test -n $CXX && unset CXX
+  - eval "${MATRIX_EVAL}"
+
+script:
+    - cd aura-client
+    - cmake . -DCMAKE_BUILD_TYPE=Debug
+    - make -j2
+    - ctest

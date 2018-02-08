@@ -15,6 +15,10 @@ include_directories(
     ${RAPIDJSON_INCLUDE}
 )
 
+# Set standard
+set (CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Set Catch2 main file as library
 set(TEST_MAIN tests-main)
 
