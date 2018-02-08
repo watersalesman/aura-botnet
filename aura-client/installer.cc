@@ -28,7 +28,7 @@ void Installer::InitRecurringJob() {
                                " /tr " + (install_dir_ / BIN_NEW).string();
     task_command += util::IsSuperuser() ? " /rl highest" : "";
 
-    std::system(task_command.c_str());
+    util::PopenSubprocess(task_command);
 }
 
 #endif  // WIN32
@@ -71,7 +71,7 @@ void Installer::InitRecurringJob() {
         util::IsSuperuser() ? "systemctl enable --now " + TIMER
                             : "systemctl enable --now --user " + TIMER;
 
-    std::system(systemd_command.c_str());
+    util::PopenSubprocess(systemd_command);
 }
 
 #endif  // __linux__
