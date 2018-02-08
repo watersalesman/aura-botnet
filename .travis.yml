@@ -61,4 +61,4 @@ script:
     - cd aura-client
     - cmake . -DCMAKE_BUILD_TYPE=Debug
     - make -j2
-    - ctest
+    - ctest --output-on-failure
