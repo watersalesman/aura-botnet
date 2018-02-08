@@ -1,12 +1,13 @@
 #include "bot.hh"
 
+#include <iso646.h>
+#include <experimental/filesystem>
 #include <future>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <experimental/filesystem>
 #include "installer.hh"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
