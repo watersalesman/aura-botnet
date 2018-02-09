@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project (aura)
+project (aura-client)
 
 
 add_definitions(-DAURA_VERSION="0.1.2")
