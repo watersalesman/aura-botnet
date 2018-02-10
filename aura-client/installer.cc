@@ -13,13 +13,14 @@ Installer::Installer(const fs::path& install_dir) {
     install_dir_ = install_dir;
 }
 
-#ifdef WIN32
-
-void Installer::InstallFiles() {
-    fs::create_directories(install_dir_);
-    fs::copy_file(BIN, install_dir_ / BIN_NEW,
+void Installer::InstallFile(const std::string& filename,
+                            const std::string& new_filename) {
+    if (!install_dir_.empty()) fs::create_directories(install_dir_);
+    fs::copy_file(filename, install_dir_ / new_filename,
                   fs::copy_options::overwrite_existing);
 }
+
+#ifdef WIN32
 
 void Installer::InitRecurringJob() {
     // Schedule task for Windows
@@ -35,8 +36,8 @@ void Installer::InitRecurringJob() {
 
 #ifdef __linux__
 
-void Installer::InstallFiles() {
-    if (not install_dir_.empty()) fs::create_directories(install_dir_);
+void Installer::InitRecurringJob() {
+    if (!install_dir_.empty()) fs::create_directories(install_dir_);
 
     fs::path timer_path = TIMER;
     fs::path service_path = SERVICE;
@@ -59,14 +60,11 @@ void Installer::InstallFiles() {
         timer_path = user_service_dir / timer_path;
     }
 
-    fs::copy_file(BIN, install_dir_ / BIN_NEW,
-                  fs::copy_options::overwrite_existing);
+    // Copy files then enable and start systemd service
     fs::copy_file(original_service, service_path,
                   fs::copy_options::overwrite_existing);
     fs::copy_file(TIMER, timer_path, fs::copy_options::overwrite_existing);
-}
 
-void Installer::InitRecurringJob() {
     std::string systemd_command =
         util::IsSuperuser() ? "systemctl enable --now " + TIMER
                             : "systemctl enable --now --user " + TIMER;

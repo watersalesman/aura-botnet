@@ -5,7 +5,6 @@
 
 SCENARIO("Working with Installer class") {
     GIVEN("a new Installer instance") {
-        std::remove(BIN_NEW.c_str());
         Installer install("");
 
         GIVEN("the client file(s)") {
@@ -18,12 +17,13 @@ SCENARIO("Working with Installer class") {
 #endif  // __linux__
 
             WHEN("installing the client") {
-                install.InstallFiles();
+                install.InstallFile(BIN, BIN_NEW);
 
                 THEN("install filed to correct locations") {
-                    REQUIRE(FileExists(BIN_NEW));
+                    REQUIRE(std::remove(BIN_NEW.c_str()) == 0);
 #ifdef __linux__
                     // Confirm successful copy and cleanup intrusive files
+                    install.InitRecurringJob();
                     std::string service_path =
                         std::getenv("HOME") + ("/" + SERVICE_DEST + "/");
                     REQUIRE(std::remove((service_path + SERVICE).c_str()) == 0);

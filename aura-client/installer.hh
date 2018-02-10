@@ -16,7 +16,8 @@ namespace fs = std::experimental::filesystem;
 class Installer {
    public:
     Installer(const fs::path& install_dir);
-    void InstallFiles();
+    void InstallFile(const std::string& filename,
+                     const std::string& new_filename);
     void InitRecurringJob();
 
    private:

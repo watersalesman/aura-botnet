@@ -96,7 +96,7 @@ SCENARIO("Working with request::DownloadFile()") {
                         "c028d7aa15e851b0eefb31638a1856498a237faf1829050832d3b9"
                         "b19f9ab75f");
             }
-			REQUIRE(std::remove(file_name.c_str()) == 0);
+            REQUIRE(std::remove(file_name.c_str()) == 0);
         }
     }
 }
