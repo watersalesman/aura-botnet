@@ -26,6 +26,7 @@ namespace sysinfo {
  * version, and operating system*/
 class DataModule {
    public:
+    virtual ~DataModule() = default;
     std::pair<std::string, std::string> Get();
 
    protected:

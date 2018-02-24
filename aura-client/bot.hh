@@ -23,6 +23,7 @@ struct CommandDependency {
         this->name = name;
         this->path = path;
     }
+    virtual ~CommandDependency() = default;
     std::string name;
     std::string path;
     virtual bool Retrieve() = 0;
