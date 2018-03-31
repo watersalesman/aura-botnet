@@ -43,7 +43,7 @@ if(WIN32)
     target_link_libraries(${PROJECT_NAME} ${WIN32_LIBS})
 endif()
 
-# Define BUILD_TESTING to build tests
+# Build tests if CMake build type is Debug
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     enable_testing()
     add_subdirectory(tests)
