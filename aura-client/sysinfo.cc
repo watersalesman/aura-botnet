@@ -52,10 +52,10 @@ void UserInfo::Collect() {
 
 DataList::DataList(const std::string& auth_hash) {
     auth_hash_ = auth_hash;
-    list_.emplace_back(std::move(std::make_unique<VersionInfo>()));
-    list_.emplace_back(std::move(std::make_unique<HashTypeInfo>()));
-    list_.emplace_back(std::move(std::make_unique<OSInfo>()));
-    list_.emplace_back(std::move(std::make_unique<UserInfo>()));
+    list_.push_back(std::make_unique<VersionInfo>());
+    list_.push_back(std::make_unique<HashTypeInfo>());
+    list_.push_back(std::make_unique<OSInfo>());
+    list_.push_back(std::make_unique<UserInfo>());
 }
 
 // Use request::PostForm to convert DataModules to POST data
