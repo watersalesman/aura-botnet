@@ -16,16 +16,10 @@ There are three header-only projects being used for this client. Thanks to the
 following projects for their awesome work:
 * [okdshin/PicoSHA2](https://github.com/okdshin/PicoSHA2/) -
 A header-file-only, SHA256 hash generator in C++
-* [Tencent/rapidjson](https://github.com/Tencent/rapidjson/) -
-A fast JSON parser/generator for C++ with both SAX/DOM style API
+* [nlohmann/json](https://github.com/nlohmann/json/) -
+A JSON library for Modern C++
 * [catchorg/Catch2](https://github.com/catchorg/Catch2/) -
 A modern, C++-native, header-only, test framework for unit-tests, TDD and BDD
-
-If the repo was not cloned with the `--recursive` flag, pull the mentioned
-dependencies by running:
-```
-git submodule update --init --recursive
-```
 
 For the Linux C++ client, you will also need *libcurl* installed with
 development files. There may be a *libcurl-devel* or *libcurl-dev* package on

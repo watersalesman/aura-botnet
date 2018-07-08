@@ -1,7 +1,11 @@
+#include <json.hpp>
+
 #include "bot.hh"
 #include "catch.hpp"
 #include "constants.hh"
 #include "helper.hh"
+
+using json = nlohmann::json;
 
 SCENARIO("using the Command class") {
     GIVEN("a test JSON command") {
@@ -12,13 +16,12 @@ SCENARIO("using the Command class") {
 #endif
         std::string response = "{\"shell\": \"default\", \"command_text\": \"" +
                                command + test_file + "\", \"files\": []}";
-        rapidjson::Document json;
-        json.Parse(response.c_str());
+        json res_json = json::parse(response.c_str());
         Command cmd(response);
 
         THEN("construct construct successfully") {
             REQUIRE(cmd.command_text == command + test_file);
-            REQUIRE(json.IsObject());
+            REQUIRE(res_json.is_object());
         }
 
         THEN("execute command") {

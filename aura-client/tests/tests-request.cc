@@ -1,12 +1,13 @@
 #include <fstream>
+#include <iostream>
+#include <json.hpp>
 #include <string>
 
 #include "catch.hpp"
 #include "helper.hh"
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "request.hh"
+
+using json = nlohmann::json;
 
 SCENARIO("Working with request::Get()") {
     GIVEN("the url https://httpbin.org/get") {
@@ -17,20 +18,19 @@ SCENARIO("Working with request::Get()") {
 
             THEN("response is not empty") { REQUIRE_FALSE(response.empty()); }
             WHEN("parsing response") {
-                rapidjson::Document json;
-                json.Parse(response.c_str());
+                auto res_json = json::parse(response);
 
                 THEN("response is a valid JSON object") {
-                    REQUIRE(json.IsObject());
+                    REQUIRE(res_json.is_object());
                 }
                 THEN("url field is correct") {
-                    REQUIRE(json["url"].IsString());
-                    REQUIRE(json["url"].GetString() == url);
+                    REQUIRE(res_json["url"].is_string());
+                    REQUIRE(res_json["url"] == url);
                 }
                 THEN("Host field is correct") {
-                    REQUIRE(json["headers"].IsObject());
-                    REQUIRE(json["headers"]["Host"].IsString());
-                    REQUIRE(json["headers"]["Host"].GetString() == host);
+                    REQUIRE(res_json["headers"].is_object());
+                    REQUIRE(res_json["headers"]["Host"].is_string());
+                    REQUIRE(res_json["headers"]["Host"] == host);
                 }
             }
         }
@@ -55,28 +55,27 @@ SCENARIO("Working with request::Post() and PostField class") {
             THEN("response is not empty") { REQUIRE_FALSE(response.empty()); }
 
             WHEN("parsing response") {
-                rapidjson::Document json;
-                json.Parse(response.c_str());
+                auto res_json = json::parse(response);
 
                 THEN("response is a valid JSON object") {
-                    REQUIRE(json.IsObject());
+                    REQUIRE(res_json.is_object());
                 }
                 THEN("url field is correct") {
-                    REQUIRE(json["url"].IsString());
-                    REQUIRE(json["url"].GetString() == url);
+                    REQUIRE(res_json["url"].is_string());
+                    REQUIRE(res_json["url"] == url);
                 }
                 THEN("Host field is correct") {
-                    REQUIRE(json["headers"].IsObject());
-                    REQUIRE(json["headers"]["Host"].IsString());
-                    REQUIRE(json["headers"]["Host"].GetString() == host);
+                    REQUIRE(res_json["headers"].is_object());
+                    REQUIRE(res_json["headers"]["Host"].is_string());
+                    REQUIRE(res_json["headers"]["Host"] == host);
                 }
 
                 THEN("POST data matches original POST form") {
-                    REQUIRE(json["form"].IsObject());
-                    REQUIRE(json["form"][field1.c_str()].IsString());
-                    REQUIRE(json["form"][field1.c_str()].GetString() == value1);
-                    REQUIRE(json["form"][field2.c_str()].IsString());
-                    REQUIRE(json["form"][field2.c_str()].GetString() == value2);
+                    REQUIRE(res_json["form"].is_object());
+                    REQUIRE(res_json["form"][field1.c_str()].is_string());
+                    REQUIRE(res_json["form"][field1.c_str()] == value1);
+                    REQUIRE(res_json["form"][field2.c_str()].is_string());
+                    REQUIRE(res_json["form"][field2.c_str()] == value2);
                 }
             }
         }

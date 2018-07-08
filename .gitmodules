@@ -1,9 +1,0 @@
-[submodule "aura-client/deps/PicoSHA2"]
-	path = aura-client/deps/PicoSHA2
-	url = https://github.com/okdshin/PicoSHA2
-[submodule "aura-client/deps/Catch2"]
-	path = aura-client/deps/Catch2
-	url = https://github.com/catchorg/Catch2
-[submodule "aura-client/deps/rapidjson"]
-	path = aura-client/deps/rapidjson
-	url = https://github.com/Tencent/rapidjson

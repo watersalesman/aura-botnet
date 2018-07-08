@@ -3,18 +3,17 @@
 
 #include <experimental/filesystem>
 #include <iostream>
+#include <json.hpp>
 #include <memory>
 #include <string>
 
 #include "installer.hh"
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "request.hh"
 #include "sysinfo.hh"
 #include "util.hh"
 
 namespace fs = std::experimental::filesystem;
+using json = nlohmann::json;
 
 // Base class for dependency files required by Command instances as specified by
 // C2 server response
@@ -53,7 +52,7 @@ class Command {
     std::string shell;
 
    private:
-    void ParseFileDeps_(const rapidjson::Value& file_deps);
+    void ParseFileDeps_(const json& file_deps);
     std::vector<std::unique_ptr<CommandDependency>> command_deps_;
 };
 

@@ -4,15 +4,13 @@ enable_testing()
 set(LINUX_LIBS curl stdc++fs pthread)
 set(WIN32_LIBS urlmon wininet)
 
-# Set include directories for needed header files
-set(CATCH2_INCLUDE "${PROJECT_SOURCE_DIR}/deps/Catch2/single_include/")
-set(PICOSHA2_INCLUDE "${PROJECT_SOURCE_DIR}/deps/PicoSHA2/")
-set(RAPIDJSON_INCLUDE "${PROJECT_SOURCE_DIR}/deps/rapidjso/include/")
+# Download Catch2
+if(NOT EXISTS "${DEPS_FOLDER}/catch.hpp")
+    file(DOWNLOAD "https://github.com/catchorg/Catch2/releases/download/v2.2.3/catch.hpp" "${DEPS_FOLDER}/catch.hpp" SHOW_PROGRESS)
+endif(NOT EXISTS "${DEPS_FOLDER}/catch.hpp")
+
 include_directories(
     ${PROJECT_SOURCE_DIR}
-    ${CATCH2_INCLUDE}
-    ${PICOSHA2_INCLUDE}
-    ${RAPIDJSON_INCLUDE}
 )
 
 # Set standard

