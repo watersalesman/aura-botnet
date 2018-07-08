@@ -10,10 +10,10 @@
 using json = nlohmann::json;
 
 SCENARIO("Working with request::Get()") {
-    GIVEN("the url https://httpbin.org/get") {
+    GIVEN("the url http://127.0.0.1:5000/get") {
         WHEN("sending a GET request") {
-            std::string host = "httpbin.org";
-            std::string url = "https://" + host + "/get";
+            std::string host = "127.0.0.1:5000";
+            std::string url = "http://" + host + "/get";
             std::string response = request::Get(url);
 
             THEN("response is not empty") { REQUIRE_FALSE(response.empty()); }
@@ -38,10 +38,10 @@ SCENARIO("Working with request::Get()") {
 }
 
 SCENARIO("Working with request::Post() and PostField class") {
-    GIVEN("the url https://httpbin.org/post and a POST form") {
+    GIVEN("the url http://127.0.0.1:5000/post and a POST form") {
         // URL
-        std::string host = "httpbin.org";
-        std::string url = "https://" + host + "/post";
+        std::string host = "127.0.0.1:5000";
+        std::string url = "http://" + host + "/post";
 
         // POST Form
         std::string field1 = "one", field2 = "two", value1 = "1", value2 = "2";
@@ -55,6 +55,7 @@ SCENARIO("Working with request::Post() and PostField class") {
             THEN("response is not empty") { REQUIRE_FALSE(response.empty()); }
 
             WHEN("parsing response") {
+                std::cout << response.size() << ": " << response << std::endl;
                 auto res_json = json::parse(response);
 
                 THEN("response is a valid JSON object") {

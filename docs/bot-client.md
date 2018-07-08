@@ -31,6 +31,8 @@ Then build by running:
 cmake .    # Run with "-DCMAKE_BUILD_TYPE=Debug" to build tests
 make
 ```
+Tests require a local httpbin server running at port 5000. Find more
+information [here](https://httpbin.org/).
 
 For building the Windows C++ client, you can find various methods of using
 CMake on Windows
