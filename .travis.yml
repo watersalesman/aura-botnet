@@ -26,7 +26,7 @@ matrix:
           language: python
           python: "3.4"
           install:
-              - pip install django
+              - pip install django==2.0.13
           script:
               - cd aura-server
               - ./manage.py migrate
@@ -36,7 +36,7 @@ matrix:
           language: python
           python: "3.5"
           install:
-              - pip install django
+              - pip install django==2.0.13
           script:
               - cd aura-server
               - ./manage.py migrate
@@ -46,7 +46,7 @@ matrix:
           language: python
           python: "3.6"
           install:
-              - pip install django
+              - pip install django==2.0.13
           script:
               - cd aura-server
               - ./manage.py migrate
